@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="main.js"></script>
+</head>
+<style>
+  body {
+    color: white;
+    font-size: 12px;
+  }
+  .wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    flex-direction: column;
+    display: flex;
+    padding: 12px;
+  }
+
+  .action-button-container {
+    margin-top: 1em;
+  }
+
+  .action-button {
+    border-radius: 0;
+    background: none;
+    border: none;
+    display: none;
+    margin: 0;
+  }
+
+  #block-id {
+    width: 70px;
+    text-align: center;
+    box-sizing: border-box;
+    font-family: ui-monospace;
+  }
+
+
+  .action-button:first-child {
+    margin-right: 1em;
+  }
+
+  .action-button.visible {
+    display: inline-block;
+  }
+
+  .flex-container {
+    display: flex;
+    align-content: center;
+  }
+
+  .field-container {
+    margin-top: 0.5em;
+  }
+
+  .field-container:first-child {
+    margin-top: 0;
+  }
+
+  .flex-container > *{
+    flex: 0 0;
+  }
+  .flex-container label{
+    min-width: 100px;
+  }
+
+  #config .title::before {
+    content: '▶︎ '
+  }
+  
+  #config.visible .title::before {
+    content: '▼ '
+  }
+
+  #config.visible .inner {
+    display: block;
+  }
+
+  #config input {
+    margin-left: -1em;
+  }
+
+  #config .inner{
+    margin-left: 1em;
+    line-height: 1.5;
+    display: none;
+  }
+
+  input {
+    margin: 0;
+  }
+
+  input[type="text"]{
+    background: none;
+    border: none;
+    appearance: none;
+    background: #333;
+    border-radius: 3px;
+    padding-bottom: 3px;
+  }
+
+  #config-label {
+    margin-bottom: 0.5em;
+  }
+
+  #dialog *{
+    font-family: "Lucida Grande";
+    color: white;
+    font-size: 12px;
+  }
+
+  #dialog {
+    padding: 20px;
+    width: 100%;
+  }
+
+  #dialog form{
+    width: 100%;
+  }
+
+  #dialog section {
+    margin-top: 1em;
+  }
+
+  hr {
+    margin: 1em 0;
+    height: 0.5px;
+    background: #333;
+  }
+</style>
+
+<body>
+
+  <uxp-panel panelid="authorisationPanel" id="authorisation-panel">
+    <div id="webview-container">
+      <webview id="webview" width="100%" height="500px" src="https://arena.mnmly.com" uxpAllowInspector="true" ></webview>
+    </div>
+    <button id="reload-button"></button>
+  </uxp-panel>
+  
+  <div class="wrapper" id="panel-1">
+
+    <div class="are-na-actions">
+
+      <div class="field-container flex-container">
+        <label for="block-id">Block ID</label>
+        <input id="block-id" type="text"/>
+      </div>
+      <div class="field-container flex-container">
+        <label for="block-use-cache">Use Cache</label>
+        <input id="block-use-cache" type="checkbox" checked/>
+      </div>
+
+      <div class="action-button-container flex-container">
+        <button class='action-button' id="open-url">Open URL</button>
+        <button class='action-button' id="import-arena">Insert Item</button>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div id="config">
+      <p id="config-label" class="title">Config</p>
+      <div class="inner">
+        <div class="flex-container">
+          <label for="config-access-token">Access Token</label>
+          <input type="text" id="config-access-token"/>
+        </div>
+        <div class="action-button-container">
+          <button class='action-button visible' id="save-config">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <dialog id="dialog">
+    <form method="dialog">
+      <div class="flex-container">
+        <label for="property-select">Property</label>
+        <select id="property-select"></select>
+      </div>
+      <section>
+      <label for="property-select-preview">Content Preview</label>
+      <div id="property-select-preview"></div>
+      </section>
+      <footer>
+          <button id="dialog-cancel-button" uxp-variant="primary" type="reset">Cancel</button>
+          <button type="submit" uxp-variant="cta">Create</button>
+      </footer>
+    </form>
+</dialog>
+</body>
+</html>
