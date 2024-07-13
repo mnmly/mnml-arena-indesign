@@ -27,7 +27,7 @@
   "entrypoints": [
     {
       "type": "panel",
-      "id": "showPanel",
+      "id": "mainPanel",
       "minimumSize": {
         "width": 230,
         "height": 200

@@ -1,8 +1,8 @@
 const { entrypoints } = require("uxp");
 const { app, Rectangle, ScriptLanguage } = require("indesign");
-const { extractIDFromItem, getIDFromString, savePreferences, loadPreferences, extractBlockId } = require("./libs/utils");
-const { importArena } = require("./libs/import-arena");
-const { setupWebView } = require('./libs/setup-webview')
+const { extractIDFromItem, getIDFromString, savePreferences, loadPreferences, extractBlockId } = require("./src/libs/utils");
+const { importArena } = require("./src/libs/import-arena");
+const { setupWebView } = require('./src/libs/setup-webview')
 
 entrypoints.setup({
   panels: {

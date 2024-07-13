@@ -13,7 +13,45 @@ var keyShortcutMapping = {
 
 let arenaAssetsFolder;
 
-async function importArena(doc, item, id, refresh) {
+async function getAssetFolder(doc) {
+
+    let docPath
+    try {
+      docPath = await doc.filePath;
+    } catch (e) {
+      throw new Error("Document has not been saved yet");
+    }
+
+    // Get the parent folder of the document
+    let documentFolderURL = docPath.url.toString()
+    let documentFolder
+
+    const assetFolderName = 'arena-assets'
+
+    try {
+        documentFolder = await fs.getEntryWithUrl(documentFolderURL)
+
+        let entries = await documentFolder.getEntries()
+        arenaAssetsFolder = entries.find((d) => {
+            return assetFolderName == d.name
+        })
+        if ( !arenaAssetsFolder ) {
+            throw new Error('Asset folder not found')
+        }
+    } catch (error) {
+        if (/Asset Folder/.test(error.message)) {
+            arenaAssetsFolder = await documentFolder.createEntry(assetFolderName)
+        } else {
+            console.log(e)
+            throw e
+        }
+    }
+
+    return arenaAssetsFolder
+
+}
+
+async function importArena(doc, item, id, refresh, accessToken) {
 
     let docPath
 
@@ -47,12 +85,11 @@ async function importArena(doc, item, id, refresh) {
             throw e
         }
     }
-    await processPageItem(item, id, refresh)
+    await processPageItem(item, id, accessToken, refresh)
 }
 
-async function getArenaData(id, force) {
-    const pref = await loadPreferences(['accessToken'])
-    var url = "https://api.are.na/v2/blocks/" + id + "?access_token=" + pref['accessToken']
+async function getArenaData(id, accessToken, force) {
+    var url = "https://api.are.na/v2/blocks/" + id + "?access_token=" + accessToken
     let filename = id + '.json'
     let fileFound = false
     let jsonFile
@@ -62,25 +99,32 @@ async function getArenaData(id, force) {
     } catch (e) {
     }
     if (!fileFound || force) {
+        console.log(url)
         jsonFile = await fetchAndSaveFile(url, arenaAssetsFolder, filename)
     }
     let data = JSON.parse(await jsonFile.read())
     return data
 }
 
-async function getArenaImage(id, force) {
-    var data = await getArenaData(id)
+async function getArenaImage(id, accessToken, force) {
+    var data = await getArenaData(id, accessToken, force)
     let url = data.image.original.url
     var imageFile = await fetchAndSaveFile(url, arenaAssetsFolder, data.id + data.image.filename)
     return imageFile
 }
 
-async function processPageItem(item, id, force) {
+async function getArenaImageFromData(id, data) {
+    let url = data.image.original.url
+    var imageFile = await fetchAndSaveFile(url, arenaAssetsFolder, data.id + data.image.filename)
+    return imageFile
+}
+
+async function processPageItem(item, id, accessToken, force) {
     if (item instanceof Rectangle) {
         item.name = 'arena-' + id
-        item.place(await getArenaImage(id, force))
+        item.place(await getArenaImage(id, accessToken, force))
     } else if (item instanceof TextFrame) {
-        var data = await getArenaData(id, force)
+        var data = await getArenaData(id, accessToken, force)
         var keys = []
         for (var key in data) {
             keys.push(key);
@@ -162,5 +206,9 @@ function createTextTypeDialog(keys, data) {
 }
 
 module.exports = {
-    importArena
+    importArena,
+    getArenaData,
+    getArenaImage,
+    getArenaImageFromData,
+    getAssetFolder
 }

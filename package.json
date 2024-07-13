@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Default template for creating Adobe UXP based InDesign plugin.",
   "main": "index.js",
+  "scripts": {
+    "start": "npm run copy-static && DEBUG=* node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch",
+    "build": "node esbuild.config.mjs --build"
+  },
   "repository": {
     "type": "git",
     "url": "git@git.corp.adobe.com:torq/uxp-developer-tools.git",
@@ -13,5 +18,14 @@
   "files": [
     "template.json",
     "template"
-  ]
+  ],
+  "devDependencies": {
+    "esbuild": "^0.23.0",
+    "esbuild-plugin-vue3": "^0.4.2"
+  },
+  "dependencies": {
+    "pinia": "^2.1.7",
+    "to-title-case": "^1.0.0",
+    "vue": "^3.4.31"
+  }
 }

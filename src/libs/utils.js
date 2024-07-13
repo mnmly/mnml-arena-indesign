@@ -1,5 +1,5 @@
 const fs = require('uxp').storage.localFileSystem;
-const app = require('indesign').app;
+const { app, ScriptLanguage } = require("indesign");
 
 const getIDFromString = (str) => {
     var id = parseInt(str.split('-').pop(), 10)
@@ -14,6 +14,12 @@ const extractIDFromItem = (linkStr) => {
     }
     return null
 }
+
+const openURL = (url) => {
+    var appleScript = 'tell application "System Events" to open location "' + url + '"';
+    app.doScript(appleScript, ScriptLanguage.APPLESCRIPT_LANGUAGE);
+}
+
 
 const extractBlockId = (url) => {
     const match = url.match(/\/block\/(\d+)$/);
@@ -64,5 +70,6 @@ module.exports = {
     loadPreferences,
     savePreferences,
     fetchAndSaveFile,
-    extractBlockId
+    extractBlockId,
+    openURL
 }
