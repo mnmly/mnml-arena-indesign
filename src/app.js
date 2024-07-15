@@ -1,13 +1,21 @@
 import { entrypoints } from 'uxp'
 import { createVue } from './composables/useVue'
+import { router } from './router';
 
 entrypoints.setup({
   panels: {
     mainPanel: {
       create() {
-        console.log('create')
         let el = document.getElementById('main-panel')
-        createVue('blockUpdate').mount(el)
+        this.app = createVue('blockUpdate').mount(el)
+      }
+    },
+    userPanel: {
+      create() {
+        let el = document.getElementById('user-panel')
+        let app = createVue('user')
+        app.use(router)
+        app.mount(el)
       },
     },
     authorisationPanel: {

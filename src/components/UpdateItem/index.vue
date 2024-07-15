@@ -1,10 +1,10 @@
 <template>
     <div class="wrapper">
 
-        <LabelledField label="block-id" type="text" v-model="block.id"></LabelledField>
+        <LabelledField label="block-id" type="text" v-model="id"></LabelledField>
         <LabelledField label="use-cache" type="checkbox" v-model="block.useCache"></LabelledField>
 
-        <div class="action-button-container flex-container" v-show="block.hasValidID && block.targetItem">
+        <div class="action-button-container flex-container" v-show="block.hasValidID && targetItem">
             <button class='action-button' id="open-url" @click="onOpenURL">Open URL</button>
             <button class='action-button' id="import-arena" @click="onImportArena" v-text="block.isImageItem ? 'Insert Image' : 'Insert Text'"></button>
         </div>
@@ -19,32 +19,30 @@ import { reactive, watch, computed, onMounted, ref, nextTick } from 'vue'
 import LabelledField from '../LabelledField/index.vue'
 import { extractBlockId, getIDFromString, openURL } from '../../libs/utils';
 import { getArenaData, getArenaImage, getArenaImageFromData, getAssetFolder, importArena } from '../../libs/import-arena';
-import { useUserStore } from '../../stores/userStore';
+import { useUserStore } from '../../stores/userStore'
+import { useBlockStore } from '../../stores/blockStore'
 import { storeToRefs } from 'pinia';
 import BlockPropertySelectionDialog from '../BlockPropertySelectionDialog/index.vue'
 
 const userStore = useUserStore()
+const blockStore = useBlockStore()
 const {accessToken} = storeToRefs(userStore)
-const block = reactive({
-    id: '',
-    useCache: true,
-    targetItem: null,
-    isImageItem: computed(() => {
-        return (block.targetItem instanceof Rectangle)
-    }),
-    hasValidID: computed(() => {
-        return !isNaN(parseInt(block.id, 10))
-    })
-})
-
+const {id, targetItem} = storeToRefs(blockStore)
 const blockData = ref(null)
 const textImportDialog = ref(null)
 
-const onOpenURL = (e) => {
-    openURL("https://are.na/block/" + block.id);
-}
+const block = reactive({
+    isImageItem: computed(() => {
+        return (targetItem.value instanceof Rectangle)
+    }),
+    hasValidID: computed(() => {
+        return !isNaN(parseInt(id.value, 10))
+    })
+})
+
 
 onMounted(async () => {
+
     try {
         const doc = app.activeDocument;
         let folder = await getAssetFolder(doc)
@@ -56,25 +54,28 @@ onMounted(async () => {
         try {
             let p = textImportDialog.value.selectedProperty
             let v = blockData.value[p]
-            block.targetItem.name = `arena.${p}-${block.id}`
-            block.targetItem.contents = (v || "").toString()
+            targetItem.value.name = `arena.${p}-${id.value}`
+            targetItem.value.contents = (v || "").toString()
         } catch (e) {
             console.log(e)
         }
     })
 })
 
-
+const onOpenURL = (e) => {
+    openURL("https://are.na/block/" + id.value);
+}
 
 const onImportArena = async (e) => {
 
-    let item = block.targetItem
-    let data = await getArenaData(block.id, accessToken.value, !block.useCache)
+    let item = targetItem.value
+    let data = await getArenaData(id.value, accessToken.value, block.useCache)
     blockData.value = data
 
+    // If is image, download the image
     if (block.isImageItem) {
-        item.name = `arena-${block.id}`
-        item.place(await getArenaImageFromData(block.id, data))
+        item.name = `arena-${id.value}`
+        item.place(await getArenaImageFromData(data))
     } else {
         let prevName = item.name
         let prevContents = item.contents
@@ -91,13 +92,11 @@ const onImportArena = async (e) => {
 
 }
 
-watch(() => block.id, (newValue) => {
-  if (/are\.na/.test(newValue)) {
-    let id = extractBlockId(newValue)
-    if (id) {
-        block.id = id
+watch(() => id.value, (newValue) => {
+    if (/are\.na/.test(newValue)) {
+        let _id = extractBlockId(newValue)
+        if (_id) { id.value = _id }
     }
-  }
 }, {immediate: true})
 
 // Set up listener for the active document
@@ -118,15 +117,15 @@ function setupSelectionChangeListener(doc) {
 }
 function onSelectionChange(event) {
     const selection = event.target.selection;
-    let id
+    let _id
     if (selection.length > 0) {
-        block.targetItem = selection[0]
-        id = getIDFromString(selection[0].name || "")
-        if (!isNaN(id)) {
-            block.id = id
+        targetItem.value = selection[0]
+        _id = getIDFromString(selection[0].name || "")
+        if (!isNaN(_id)) {
+            id.value = _id
         }
     } else {
-        block.targetItem = null
+        targetItem.value = null
     }
 }
 

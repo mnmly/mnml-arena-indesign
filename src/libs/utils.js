@@ -47,8 +47,9 @@ async function loadPreferences(property) {
     }
 }
 
-async function fetchAndSaveFile(url, folder, fileName) {
+async function fetchAndSaveFile(url, folder, fileName, useCache) {
     try {
+        // @TODO: force: check if the image is available in local
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -56,7 +57,6 @@ async function fetchAndSaveFile(url, folder, fileName) {
         const data = await response.arrayBuffer();
         const file = await folder.createFile(fileName, { overwrite: true });
         await file.write(data);
-        console.log(`File saved as ${fileName}`);
         return file;
     } catch (error) {
         console.error("There was a problem fetching or saving the file:", error);

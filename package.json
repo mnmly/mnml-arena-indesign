@@ -24,8 +24,10 @@
     "esbuild-plugin-vue3": "^0.4.2"
   },
   "dependencies": {
+    "are.na": "github:yuboazdiadi/arena-js",
     "pinia": "^2.1.7",
     "to-title-case": "^1.0.0",
-    "vue": "^3.4.31"
+    "vue": "^3.4.31",
+    "vue-router": "^4.4.0"
   }
 }

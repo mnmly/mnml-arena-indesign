@@ -129,71 +129,13 @@
     background: #333;
   }
 </style>
+<link rel="stylesheet" href="dist/app.css">
 </head>
 
 <body>
-  <uxp-panel panelid="authorisationPanel" id="authorisation-panel">
-  </uxp-panel>
+  <uxp-panel panelid="authorisationPanel" id="authorisation-panel"></uxp-panel>
+  <uxp-panel panelid="userPanel" id="user-panel"></uxp-panel>
   <uxp-panel panelid="mainPanel" id="main-panel"></uxp-panel>
-  <!-- <uxp-panel panelid="authorisationPanel" id="authorisation-panel">
-    <div id="webview-container">
-      <webview id="webview" width="100%" height="500px" src="https://arena.mnmly.com" uxpAllowInspector="true" ></webview>
-    </div>
-    <button id="reload-button"></button>
-  </uxp-panel>
-  
-  <div class="wrapper" id="panel-1">
-
-    <div class="are-na-actions">
-
-      <div class="field-container flex-container">
-        <label for="block-id">Block ID</label>
-        <input id="block-id" type="text"/>
-      </div>
-      <div class="field-container flex-container">
-        <label for="block-use-cache">Use Cache</label>
-        <input id="block-use-cache" type="checkbox" checked/>
-      </div>
-
-      <div class="action-button-container flex-container">
-        <button class='action-button' id="open-url">Open URL</button>
-        <button class='action-button' id="import-arena">Insert Item</button>
-      </div>
-
-    </div>
-
-    <hr/>
-
-    <div id="config">
-      <p id="config-label" class="title">Config</p>
-      <div class="inner">
-        <div class="flex-container">
-          <label for="config-access-token">Access Token</label>
-          <input type="text" id="config-access-token"/>
-        </div>
-        <div class="action-button-container">
-          <button class='action-button visible' id="save-config">Save</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <dialog id="dialog">
-    <form method="dialog">
-      <div class="flex-container">
-        <label for="property-select">Property</label>
-        <select id="property-select"></select>
-      </div>
-      <section>
-      <label for="property-select-preview">Content Preview</label>
-      <div id="property-select-preview"></div>
-      </section>
-      <footer>
-          <button id="dialog-cancel-button" uxp-variant="primary" type="reset">Cancel</button>
-          <button type="submit" uxp-variant="cta">Create</button>
-      </footer>
-    </form>
-</dialog> -->
   <script src="dist/app.js"></script>
 </body>
 </html>

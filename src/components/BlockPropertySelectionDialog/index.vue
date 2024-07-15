@@ -7,10 +7,10 @@
                 <option v-for="property in properties" :key="property" :value="property" v-text="property"></option>
             </select>
         </div>
-        <section>
+        <!-- <section>
             <label for="property-select-preview">Content Preview</label>
             <div id="property-select-preview" v-text="propertyValue"></div>
-        </section>
+        </section> -->
         <footer>
             <button id="dialog-cancel-button" uxp-variant="primary" type="reset" @click="close('cancel')">Cancel</button>
             <button type="submit" uxp-variant="cta">Create</button>

@@ -8,11 +8,18 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useUserStore } from '../../stores/userStore';
 import { storeToRefs } from 'pinia';
+import Arena from 'are.na'
 
 const root = ref(null)
 const webview = ref(null)
 const userStore = useUserStore()
-const {accessToken} = storeToRefs(userStore)
+const {accessToken, id} = storeToRefs(userStore)
+
+Arena.prototype.me = function() {
+    return {
+        get: () => this._req('GET', 'me')
+    }
+}
 
 const onresize = () => {
     webview.height = root.value.parentElement.clientHeight + 'px'
@@ -22,9 +29,11 @@ onMounted(() => {
     // Communication between plugin and web content
     webview.value.addEventListener('message', async (event) => {
         try {
-            console.log(userStore)
             let data = JSON.parse(event.message)
             accessToken.value = data.accessToken
+            let arena = new Arena({accessToken: data.accessToken})
+            let user = await arena.me().get()
+            id.value = user.id
             webview.src = "https://www.are.na"
         } catch (e){
             console.error(e)

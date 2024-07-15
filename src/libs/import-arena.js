@@ -88,7 +88,7 @@ async function importArena(doc, item, id, refresh, accessToken) {
     await processPageItem(item, id, accessToken, refresh)
 }
 
-async function getArenaData(id, accessToken, force) {
+async function getArenaData(id, accessToken, useCache) {
     var url = "https://api.are.na/v2/blocks/" + id + "?access_token=" + accessToken
     let filename = id + '.json'
     let fileFound = false
@@ -98,111 +98,24 @@ async function getArenaData(id, accessToken, force) {
         fileFound = true
     } catch (e) {
     }
-    if (!fileFound || force) {
-        console.log(url)
+    if (!fileFound || !useCache) {
         jsonFile = await fetchAndSaveFile(url, arenaAssetsFolder, filename)
     }
     let data = JSON.parse(await jsonFile.read())
     return data
 }
 
-async function getArenaImage(id, accessToken, force) {
-    var data = await getArenaData(id, accessToken, force)
+async function getArenaImage(id, accessToken, useCache) {
+    var data = await getArenaData(id, accessToken, useCache)
     let url = data.image.original.url
-    var imageFile = await fetchAndSaveFile(url, arenaAssetsFolder, data.id + data.image.filename)
+    var imageFile = await fetchAndSaveFile(url, arenaAssetsFolder, data.id + data.image.filename, useCache)
     return imageFile
 }
 
-async function getArenaImageFromData(id, data) {
+async function getArenaImageFromData(data) {
     let url = data.image.original.url
     var imageFile = await fetchAndSaveFile(url, arenaAssetsFolder, data.id + data.image.filename)
     return imageFile
-}
-
-async function processPageItem(item, id, accessToken, force) {
-    if (item instanceof Rectangle) {
-        item.name = 'arena-' + id
-        item.place(await getArenaImage(id, accessToken, force))
-    } else if (item instanceof TextFrame) {
-        var data = await getArenaData(id, accessToken, force)
-        var keys = []
-        for (var key in data) {
-            keys.push(key);
-        }
-        keys.sort()
-        var result = await createTextTypeDialog(keys, data)
-        if (result && result.property) {
-            requestedKeys = [result.property]
-            var contents = []
-            var keys = []
-            for (var j = 0; j < requestedKeys.length; j++) {
-                var key = requestedKeys[j];
-                if (keyShortcutMapping[key]) {
-                    key = keyShortcutMapping[key]
-                }
-                keys.push(key)
-                contents.push(data[key].replace('&gt; ', ''))
-            }
-            item.name = 'arena.' + keys.join('+') + '-' + id
-            item.contents = contents.join('\n')
-        }
-    }
-}
-
-
-function createTextTypeDialog(keys, data) {
-
-
-    return new Promise((resolve, reject) => {
-        let dialog = document.getElementById('dialog')
-        let dropdown = document.getElementById('property-select')
-        let preview = document.getElementById('property-select-preview')
-        let closeButton = document.getElementById('dialog-cancel-button')
-        
-        const changeWindowSize = () => {
-            let width = 400
-            let height = dialog.offsetHeight
-            dialog.resizeTo(width, height, 100, 100)
-        }
-
-        keys.forEach((k) => {
-            let o = document.createElement('option')
-            o.value = k
-            o.textContent = k
-            dropdown.appendChild(o)
-        })
-
-        dropdown.selectedIndex = keys.indexOf('title')
-        preview.textContent = data['title']
-
-        const onchange = (e) => {
-            preview.textContent = data[e.target.value]
-            setTimeout(changeWindowSize, 100)
-        }
-
-        const onclose = (e) => {
-            dialog.close('cancelled');
-        }
-
-        dropdown.addEventListener('change', onchange)
-
-        closeButton.addEventListener("click", onclose);
-
-        dialog.showModal({title: "Are.na Block Import"}).then((r) => {
-            dropdown.removeEventListener('change', onchange)
-            closeButton.removeEventListener("click", onclose);
-            if (r == "") {
-                resolve({property: dropdown.value})
-            } else {
-                resolve(null)
-            }
-        }).catch((e) => {
-            debugger
-        })
-
-        changeWindowSize()
-
-    });
 }
 
 module.exports = {
