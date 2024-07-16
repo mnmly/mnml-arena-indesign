@@ -1,11 +1,9 @@
-const fs = require('uxp').storage.localFileSystem;
-const { app, ScriptLanguage } = require("indesign");
+const os = require('os')
+const fs = require('uxp').storage.localFileSystem
+const { app, ScriptLanguage } = require("indesign")
 
 const getIDFromString = (str) => {
-    var id = parseInt(str.split('-').pop(), 10)
-    // if( item.contentType == ContentType.GRAPHIC_TYPE && item.graphics.length > 0) {
-    //     var idFromItem = parseInt(item.graphics[0].itemLink.name.replace(/\w{32}\.\w+$/, ''), 10)
-    return id
+    return parseInt(str.split('-').pop(), 10)
 }
 
 const extractIDFromItem = (linkStr) => {
@@ -16,10 +14,13 @@ const extractIDFromItem = (linkStr) => {
 }
 
 const openURL = (url) => {
-    var appleScript = 'tell application "System Events" to open location "' + url + '"';
-    app.doScript(appleScript, ScriptLanguage.APPLESCRIPT_LANGUAGE);
+    if (os.platform() == 'darwin') {
+        var appleScript = 'tell application "System Events" to open location "' + url + '"';
+        app.doScript(appleScript, ScriptLanguage.APPLESCRIPT_LANGUAGE);
+    } else {
+        alert('Windows support is currently limited.')
+    }
 }
-
 
 const extractBlockId = (url) => {
     const match = url.match(/\/block\/(\d+)$/);

@@ -2,7 +2,11 @@
     <div class="wrapper">
 
         <LabelledField label="block-id" type="text" v-model="id"></LabelledField>
+        <hr/>
         <LabelledField label="use-cache" type="checkbox" v-model="block.useCache"></LabelledField>
+        <LabelledField label="datetime-format" type="text" v-model="datetimeFormat"></LabelledField>
+
+        <p class="note"><span v-show="isDatetimeFormatModified">Reset the value to <a href="#" @click.prevent="resetDatetimeFormat">default format</a>.</span> Refer to <a href="https://momentjs.com/docs/#/displaying/format/" target="_blank" @click="openOwnLink">moment.js</a> for available format string.</p>
 
         <div class="action-button-container flex-container" v-show="block.hasValidID && targetItem">
             <button class='action-button' id="open-url" @click="onOpenURL">Open URL</button>
@@ -12,6 +16,20 @@
     </div>
     <BlockPropertySelectionDialog ref="textImportDialog" v-bind:data="blockData"></BlockPropertySelectionDialog>
 </template>
+
+<style>
+
+.note {
+    margin-top: 1em;
+    font-size: 90%;
+}
+
+.note a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+</style>
 
 <script setup>
 import { app, Rectangle } from 'indesign'
@@ -26,12 +44,16 @@ import BlockPropertySelectionDialog from '../BlockPropertySelectionDialog/index.
 
 const userStore = useUserStore()
 const blockStore = useBlockStore()
-const {accessToken} = storeToRefs(userStore)
+const {accessToken, datetimeFormat } = storeToRefs(userStore)
 const {id, targetItem} = storeToRefs(blockStore)
 const blockData = ref(null)
 const textImportDialog = ref(null)
 
+const isDatetimeFormatModified = computed(() => {
+    return datetimeFormat.value != userStore.defaultDatetimeFormat
+})
 const block = reactive({
+    useCache: true,
     isImageItem: computed(() => {
         return (targetItem.value instanceof Rectangle)
     }),
@@ -39,6 +61,14 @@ const block = reactive({
         return !isNaN(parseInt(id.value, 10))
     })
 })
+
+const resetDatetimeFormat = (e) => {
+    datetimeFormat.value = userStore.defaultDatetimeFormat
+}
+
+const openOwnLink = (e) => {
+    openURL(e.target.href)
+}
 
 
 onMounted(async () => {

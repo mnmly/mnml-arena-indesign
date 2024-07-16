@@ -2,10 +2,14 @@ import Arena from 'are.na';
 import { defineStore } from "pinia"
 import { ref, watch } from "vue"
 
+const defaultDatetimeFormat = 'MMMM Do YYYY, h:mm:ss a'
+
 export const useUserStore = defineStore("user", () => {
-  const accessToken = ref("")
+
   const id = ref("")
   const arena = ref(null)
+  const accessToken = ref("")
+  const datetimeFormat = ref( defaultDatetimeFormat )
 
   watch([accessToken, id], ()=> {
     if (accessToken.value != '' && id.value != '') {
@@ -14,5 +18,5 @@ export const useUserStore = defineStore("user", () => {
       arena.value = null
     }
   })
-  return { accessToken, id, arena};
+  return { accessToken, id, arena, datetimeFormat, defaultDatetimeFormat};
 }, {persist: true});

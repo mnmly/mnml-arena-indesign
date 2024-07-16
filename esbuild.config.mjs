@@ -12,7 +12,7 @@ const commonConfig = {
     }
   })],
   sourcemap: true, // Enable source maps,
-  external: ['uxp', 'indesign'],
+  external: ['uxp', 'indesign', 'os'],
 }
 
 async function build(watch = false) {

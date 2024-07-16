@@ -13,6 +13,7 @@
     "localFileSystem": "fullAccess",
     "network": {
       "domains": [
+          "https://momentjs.com",
           "https://*.are.na",
           "https://*.cloudfront.net"
         ]
