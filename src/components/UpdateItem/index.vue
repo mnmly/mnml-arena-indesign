@@ -18,7 +18,7 @@ import { app, Rectangle } from 'indesign'
 import { reactive, watch, computed, onMounted, ref, nextTick } from 'vue'
 import LabelledField from '../LabelledField/index.vue'
 import { extractBlockId, getIDFromString, openURL } from '../../libs/utils';
-import { getArenaData, getArenaImage, getArenaImageFromData, getAssetFolder, importArena } from '../../libs/import-arena';
+import { getArenaData, getArenaImageFromData, getAssetFolder } from '../../libs/import-arena';
 import { useUserStore } from '../../stores/userStore'
 import { useBlockStore } from '../../stores/blockStore'
 import { storeToRefs } from 'pinia';
@@ -75,7 +75,7 @@ const onImportArena = async (e) => {
     // If is image, download the image
     if (block.isImageItem) {
         item.name = `arena-${id.value}`
-        item.place(await getArenaImageFromData(data))
+        item.place(await getArenaImageFromData(data, block.useCache))
     } else {
         let prevName = item.name
         let prevContents = item.contents

@@ -1,6 +1,7 @@
 <template>
     <div class="content-list">
         <RouterLink to="/">Back</RouterLink>
+        <button @click="test">test</button>
         <button @click="importContents">Import Contents</button>
         <BlockCellView ref="contentsRef" v-for="content in contents" :key="content.id" :content="content" @click="onclick(content)" :class="selectedClass(content)"></BlockCellView>
         <div>{{ slug }}</div>
@@ -8,25 +9,26 @@
 </template>
 
 <script setup>
+
+import { app, LocationOptions } from 'indesign'
 import { onMounted, ref, onBeforeUnmount, inject, watch } from 'vue';
+
 import { RouterLink } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useUserStore } from '../../stores/userStore';
 import { useBlockStore } from '../../stores/blockStore'
 import BlockCellView from './../BlockCellView/index.vue'
 
-import { app, LocationOptions } from 'indesign'
-import { getArenaImageFromData } from '../../libs/import-arena';
+import { updateItem } from '../../libs/import-arena';
+import { createBoilerplateSpread } from '../../libs/master-boilerplate';
 
 const blockStore = useBlockStore()
-const blockID = storeToRefs(blockStore).id
-
 const userStore = useUserStore()
-const {arena, id} = storeToRefs(userStore)
+
+const blockID = storeToRefs(blockStore).id
+const { arena } = storeToRefs(userStore)
 
 const contents = ref([])
-let page = 1
-let fullyLoaded = false
 const contentsRef = ref(null)
 const isBottom = ref(false)
 const props = defineProps({
@@ -43,6 +45,9 @@ const selectedClass = (content) => {
 }
 
 const scrollContainer = inject('scrollContainer')
+
+let page = 1
+let fullyLoaded = false
 
 const loadContents = async (opts) => {
     if( arena.value ) {
@@ -77,6 +82,11 @@ watch(isBottom, async (newVal, oldVal) => {
     }
 })
 
+const test = async () => {
+    let doc = await app.activeDocument;
+    createBoilerplateSpread(doc, 'demo')
+}
+
 const importContents = async () => {
 
     if (!fullyLoaded) {
@@ -89,14 +99,19 @@ const importContents = async () => {
     let doc = await app.activeDocument;
     let types = ['image', 'text', 'attachment']
     let spreads = {}
+
     types.forEach( (t) => {
         let spread = doc.masterSpreads.itemByName(`A-${t}`);
         if (spread.isValid) {
             spreads[t] = spread
+        } else if (t == 'image'){
+            createBoilerplateSpread(doc, t)
+            alert('Master Spread: `A-image` is automatically created')
+        } else {
+            alert('Master Spread: `A-' + t + '` is not available.\nRefer to `A-image` master spread.')
         }
     })
 
-    // Function to override a master page item and make it editable
     function overrideItem(page, itemName) {
         var masterItem = page.masterPageItems.find((d) => d.name == itemName);
         if (masterItem && masterItem.isValid) {
@@ -110,25 +125,18 @@ const importContents = async () => {
     contents.value.forEach(async ( content )=>{
 
         let masterSpread = spreads[content.class.toLowerCase()]
-        if (!masterSpread) { return console.log(`masterSpread for ${content.class} is not prepared`)}
-        let masterPageIndex = (doc.pages.length + 1) % 2
+        if (!masterSpread) { return console.log(`masterSpread for ${content.class} is not prepared. Make 'A-${content.class.toLowerCase()}' Master Spread`)}
+
         let newPage = doc.pages.add(LocationOptions.AT_END)
         newPage.appliedMaster = masterSpread
 
         Object.keys(content).forEach(async (key) => {
             var item = overrideItem(newPage, key);
             if (item && item.isValid) {
-                if(key == 'image') {
-                    item.name = `arena-${content.id}`
-                    item.place(await getArenaImageFromData(content))
-                } else {
-                    item.name = `arena.${key}-${content.id}`
-                    item.contents = content[key];
-                }
+                await updateItem(item, content, key)
             }
         })
     })
-
 }
 
 const onscroll = (e) => {

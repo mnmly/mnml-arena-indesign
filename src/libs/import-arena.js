@@ -1,17 +1,28 @@
 
-const { app, Rectangle, TextFrame } = require("indesign");
-const { fetchAndSaveFile, loadPreferences } = require("./utils");
 const fs = require('uxp').storage.localFileSystem;
-
-// const path = require("path");
-
-var keyShortcutMapping = {
-    'c': 'content',
-    'd': 'description',
-    't': 'title'
-};
+const { fetchAndSaveFile, loadPreferences } = require("./utils");
+const moment = require('moment')
 
 let arenaAssetsFolder;
+
+const updateItem = async (item, data, key, datetimeFormat) => {
+    const datetimeKeys = ['updated_at', 'created_at']
+    if(key == 'image') {
+        item.name = `arena-${data.id}`
+        try {
+            item.place(await getArenaImageFromData(data))
+        } catch (e) {
+            console.log(e)
+        }
+    } else {
+        item.name = `arena.${key}-${data.id}`
+        if (datetimeKeys.indexOf(key) > -1) {
+            item.contents = moment(data[key]).format(datetimeFormat || 'MMMM Do YYYY, h:mm:ss a')
+        } else {
+            item.contents = data[key];
+        }
+    }
+}
 
 async function getAssetFolder(doc) {
 
@@ -99,7 +110,7 @@ async function getArenaData(id, accessToken, useCache) {
     } catch (e) {
     }
     if (!fileFound || !useCache) {
-        jsonFile = await fetchAndSaveFile(url, arenaAssetsFolder, filename)
+        jsonFile = await fetchAndSaveFile(url, arenaAssetsFolder, filename, useCache)
     }
     let data = JSON.parse(await jsonFile.read())
     return data
@@ -107,14 +118,12 @@ async function getArenaData(id, accessToken, useCache) {
 
 async function getArenaImage(id, accessToken, useCache) {
     var data = await getArenaData(id, accessToken, useCache)
-    let url = data.image.original.url
-    var imageFile = await fetchAndSaveFile(url, arenaAssetsFolder, data.id + data.image.filename, useCache)
-    return imageFile
+    return getArenaImageFromData(data, useCache)
 }
 
-async function getArenaImageFromData(data) {
+async function getArenaImageFromData(data, useCache) {
     let url = data.image.original.url
-    var imageFile = await fetchAndSaveFile(url, arenaAssetsFolder, data.id + data.image.filename)
+    var imageFile = await fetchAndSaveFile(url, arenaAssetsFolder, data.id + data.image.filename, useCache)
     return imageFile
 }
 
@@ -123,5 +132,6 @@ module.exports = {
     getArenaData,
     getArenaImage,
     getArenaImageFromData,
-    getAssetFolder
+    getAssetFolder,
+    updateItem
 }

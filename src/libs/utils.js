@@ -36,10 +36,10 @@ async function savePreferences(pref) {
 
 async function loadPreferences(property) {
     try {
-        const dataFolder = await fs.getDataFolder();
-        const file = await dataFolder.getEntry('mnml-arena.json');
-        const contents = await file.read();
-        const data = JSON.parse(contents);
+        const dataFolder = await fs.getDataFolder()
+        const file = await dataFolder.getEntry('mnml-arena.json')
+        const contents = await file.read()
+        const data = JSON.parse(contents)
         return property ? data[property] : data
     } catch (error) {
         console.log('No custom preferences file found or error reading it');
@@ -48,22 +48,28 @@ async function loadPreferences(property) {
 }
 
 async function fetchAndSaveFile(url, folder, fileName, useCache) {
+
     try {
-        // @TODO: force: check if the image is available in local
-        const response = await fetch(url);
-        if (!response.ok) {
+        if ( useCache ) {
+            let entries = await folder.getEntries()
+            let found = entries.find( ( d ) => {
+                return fileName == d.name
+            } )
+            if ( found ) { return found }
+        }
+        const response = await fetch( url )
+        if ( !response.ok ) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.arrayBuffer();
-        const file = await folder.createFile(fileName, { overwrite: true });
-        await file.write(data);
+        const data = await response.arrayBuffer()
+        const file = await folder.createFile( fileName, { overwrite: true } )
+        await file.write( data )
         return file;
-    } catch (error) {
+    } catch ( error ) {
         console.error("There was a problem fetching or saving the file:", error);
     }
 }
 
-// Usage
 module.exports = {
     getIDFromString,
     extractIDFromItem,
@@ -71,5 +77,5 @@ module.exports = {
     savePreferences,
     fetchAndSaveFile,
     extractBlockId,
-    openURL
+    openURL,
 }
