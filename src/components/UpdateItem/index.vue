@@ -38,7 +38,7 @@ import { app, Rectangle } from 'indesign'
 import { reactive, watch, computed, onMounted, ref, nextTick } from 'vue'
 import LabelledField from '../LabelledField/index.vue'
 import { extractBlockId, getIDFromString, openURL } from '../../libs/utils';
-import { getArenaData, getArenaImageFromData, getAssetFolder, updateItem } from '../../libs/import-arena';
+import { getArenaData, getAssetFolder, updateItem } from '../../libs/import-arena';
 import { useUserStore } from '../../stores/userStore'
 import { useBlockStore } from '../../stores/blockStore'
 import { storeToRefs } from 'pinia';
@@ -48,13 +48,15 @@ import moment from 'moment';
 const userStore = useUserStore()
 const blockStore = useBlockStore()
 const {accessToken, datetimeFormat } = storeToRefs(userStore)
-const {id, targetItem} = storeToRefs(blockStore)
+const { id, targetItem } = storeToRefs(blockStore)
+
 const blockData = ref(null)
 const textImportDialog = ref(null)
 
 const isDatetimeFormatModified = computed(() => {
     return datetimeFormat.value != userStore.defaultDatetimeFormat
 })
+
 const block = reactive({
     useCache: true,
     isImageItem: computed(() => {
@@ -76,7 +78,6 @@ const resetDatetimeFormat = (e) => {
 const openOwnLink = (e) => {
     openURL(e.target.href)
 }
-
 
 onMounted(async () => {
 

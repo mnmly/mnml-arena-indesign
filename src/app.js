@@ -1,6 +1,6 @@
-import { entrypoints } from 'uxp'
+import { router } from './router'
 import { createVue } from './composables/useVue'
-import { router } from './router';
+import { entrypoints } from 'uxp'
 
 entrypoints.setup({
   panels: {

@@ -9,14 +9,15 @@
 <style>
 
 .field-container input[type='text'] {
-  background: none;
-  border: none;
-  appearance: none;
-  background: #333;
-  border-radius: 3px;
-  padding-bottom: 3px;
-  flex: 1;
-  min-width: 50px;
+    background: none;
+    border: none;
+    appearance: none;
+    background: #333;
+    border-radius: 3px;
+    padding-bottom: 3px;
+    flex: 1;
+    min-width: 50px;
+
 }
 
 .field-container {
@@ -31,13 +32,14 @@
 </style>
 
 <script setup>
+
 import toTitleCase from 'to-title-case';
 import { reactive, computed, watch, ref } from 'vue'
 
 const props = defineProps({
-  label: String,
-  type: String,
-  modelValue: [String, Number, Boolean]
+    label: String,
+    type: String,
+    modelValue: [String, Number, Boolean]
 })
 
 const inputValue = ref(props.modelValue)
