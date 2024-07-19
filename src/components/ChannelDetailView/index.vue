@@ -1,12 +1,94 @@
 <template>
     <div class="content-list">
-        <RouterLink to="/">Back</RouterLink>
-        <button @click="test">test</button>
-        <button @click="importContents">Import Contents</button>
-        <BlockCellView ref="contentsRef" v-for="content in contents" :key="content.id" :content="content" @click="onclick(content)" :class="selectedClass(content)"></BlockCellView>
-        <div>{{ slug }}</div>
+        <nav>
+            <div class="flex">
+                <RouterLink to="/" class="back"> &lt; </RouterLink>
+                <div v-if="channel" :class="`channel-${channel.status}`">
+                    <h5 class="title">{{ channel.title }}</h5>
+                </div>
+                <p></p>
+            </div>
+        </nav>
+        <div v-if="channel" class="meta" :class="`channel-${channel.status}`">
+            <h3 class="title">{{ channel.title }}</h3>
+            <p class="description">{{ channel.metadata.description }}</p>
+            <p>by <b>{{ channel.user.full_name }}</b></p>
+            <a class='cta' @click.prevent="importContents">Import Contents</a>
+        </div>
+        <div class="grid">
+            <BlockCellView ref="contentsRef" v-for="content in contents" :key="content.id" :content="content" @click="onclick(content)" :class="selectedClass(content)"></BlockCellView>
+        </div>
     </div>
 </template>
+
+<style scoped>
+
+.back {
+    color: inherit;
+}
+
+.flex {
+    display: flex;
+    justify-content: space-between;
+}
+
+nav {
+    position: fixed;
+    background-color: var(--colors-gray0);
+    width: 95%;
+    left: 0;
+    top: 0;
+    padding: 10px;
+}
+
+.cta {
+    background: rgb(247, 247, 247);
+    border: 1px solid rgb(222, 222, 222);
+    padding: 0px 10px;;
+    display: block;
+    color: rgb(51, 51, 51);
+    text-decoration: none;
+    border-radius: 3px;
+    height: 20px;
+    justify-content: center;
+    align-content: center;
+    width: 120px;
+    /* margin: 0 auto; */
+    margin-top: 20px;
+    margin: 20px auto;
+}
+
+.meta {
+    margin-top: 3em;
+    text-align: center;
+}
+
+.grid {
+    margin-top: 1.5em;
+}
+
+.title {
+    margin: 0;
+    font-weight: normal;
+    margin-bottom: 0.5em;
+}
+
+.description {
+    margin-bottom: 0.5em;
+}
+
+.channel-closed {
+    color: var(--colors-channelClosed3);
+}
+
+.channel-public {
+    color: var(--colors-channelPublic3);
+}
+
+.channel-private {
+    color: var(--colors-channelPrivate3)
+}
+</style>
 
 <script setup>
 
@@ -28,6 +110,7 @@ const userStore = useUserStore()
 const blockID = storeToRefs(blockStore).id
 const { arena } = storeToRefs(userStore)
 
+const channel = ref(null)
 const contents = ref([])
 const contentsRef = ref(null)
 const isBottom = ref(false)
@@ -53,8 +136,10 @@ const loadContents = async (opts) => {
     if( arena.value ) {
         if (fullyLoaded) { return }
         let result = await arena.value.channel(props.slug).get(opts)
+        if (!channel.value) {
+            channel.value = result
+        }
         contents.value = contents.value.concat(result.contents)
-        console.log(result.contents)
         if (contents.value.length == result.length) {
             fullyLoaded = true
         }
@@ -88,7 +173,6 @@ const test = async () => {
 }
 
 const importContents = async () => {
-
     if (!fullyLoaded) {
         while(!fullyLoaded) {
             page++
@@ -106,9 +190,9 @@ const importContents = async () => {
             spreads[t] = spread
         } else if (t == 'image'){
             createBoilerplateSpread(doc, t)
-            alert('Master Spread: `A-image` is automatically created')
+            // alert('Master Spread: `A-image` is automatically created')
         } else {
-            alert('Master Spread: `A-' + t + '` is not available.\nRefer to `A-image` master spread.')
+            // alert('Master Spread: `A-' + t + '` is not available.\nRefer to `A-image` master spread.')
         }
     })
 
@@ -117,7 +201,7 @@ const importContents = async () => {
         if (masterItem && masterItem.isValid) {
             return masterItem.override(page);
         } else {
-            alert("Item '" + itemName + "' not found on master page.");
+            // alert("Item '" + itemName + "' not found on master page.");
             return null;
         }
     }

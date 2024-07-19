@@ -1,6 +1,6 @@
 <template>
     <div ref='root' class="content-list">
-    <ChannelCellView ref="cellsRef" v-for="channel in channels" :key="channel.id" :channel="channel">
+    <ChannelCellView ref="cellsRef" v-for="content in contents" :key="content.id" :channel="content">
         <slot/>
     </ChannelCellView>
     </div>
@@ -9,52 +9,70 @@
 
 <script setup>
 
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { nextTick, onBeforeUnmount, onMounted, ref, watch, inject } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useUserStore } from '../../stores/userStore';
 import ChannelCellView from '../ChannelCellView/index.vue'
 
 const root = ref(null)
-const channels = ref([])
+const contents = ref([])
 const cellsRef = ref(null)
+const isBottom = ref(false)
+
+const scrollContainer = inject('scrollContainer')
 
 const userStore = useUserStore()
 const {arena, id} = storeToRefs(userStore)
 
-const onresize = () => {
-    if ( cellsRef.value && cellsRef.value.length > 0 ) {
-        let w = cellsRef.value[0].$el.clientWidth
-        cellsRef.value.forEach((d) => {
-            d.size = w
-        })
-    }
-}
 
-watch(channels, () => {
-    nextTick(onresize)
+let page = 1
+let fullyLoaded = false
+
+watch(isBottom, async (newVal, oldVal) => {
+    if(newVal) {
+        page++
+        await loadContents({page})
+    }
 })
 
-const loadChannels = async () => {
-    try{
-
-    if(arena.value) {
-        channels.value = await arena.value.user(id.value).channels()
+const loadContents = async (opts) => {
+    if( arena.value ) {
+        if (fullyLoaded) { return }
+        let result = await arena.value.user(id.value).channels(opts)
+        contents.value = contents.value.concat(result)
+        if (contents.value.length == result.attrs.length) {
+            fullyLoaded = true
+        }
     } else {
-        channels.value = []
-    }
-    } catch (e) {
-        console.log(e)
+        contents.value = []
+        fullyLoaded = false
     }
 }
 
-watch(arena, async (newVal, oldVal) => {
-    await loadChannels()
-})
+const onresize = () => {
+    onscroll()
+}
+
+const onscroll = (e) => {
+    let el = scrollContainer.value
+    let threshold = el.scrollHeight - el.clientHeight
+    if(threshold > 0) {
+        isBottom.value = (el.scrollTop + 10) > threshold
+    }
+}
 
 onMounted(async () => {
-//     let arena = new Arena({accessToken: accessToken.value})
-//     channels.value = await arena.user(id.value).channels()
-    await loadChannels()
+    const initLoad = async () => {
+        page = 1
+        fullyLoaded = false
+        await loadContents({page})
+    }
+    if ( arena.value ) {
+        await initLoad()
+    } else {
+        watch(arena, async() => await initLoad() )
+    }
+    scrollContainer.value.addEventListener('scroll', onscroll)
     window.addEventListener('resize', onresize)
     onresize()
 })
@@ -62,5 +80,4 @@ onMounted(async () => {
 onBeforeUnmount(() =>{
     window.removeEventListener('resize', onresize)
 })
-
 </script>

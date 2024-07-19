@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 
 import index from "../index.vue";
-import user from "../components/User/index.vue";
+import main from "../components/Main/index.vue";
 import auth from '../components/Auth/index.vue'
 import blockUpdate from '../components/UpdateItem/index.vue'
 import { createPinia } from 'pinia'
@@ -15,7 +15,7 @@ export const createVue = (entrypoint) => {
   const route = {
     index,
     auth,
-    user,
+    main,
     blockUpdate,
   }
 

@@ -16,6 +16,7 @@
   border-radius: 3px;
   padding-bottom: 3px;
   flex: 1;
+  min-width: 50px;
 }
 
 .field-container {

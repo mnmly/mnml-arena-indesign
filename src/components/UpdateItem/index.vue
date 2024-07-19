@@ -6,7 +6,9 @@
         <LabelledField label="use-cache" type="checkbox" v-model="block.useCache"></LabelledField>
         <LabelledField label="datetime-format" type="text" v-model="datetimeFormat"></LabelledField>
 
-        <p class="note"><span v-show="isDatetimeFormatModified">Reset the value to <a href="#" @click.prevent="resetDatetimeFormat">default format</a>.</span> Refer to <a href="https://momentjs.com/docs/#/displaying/format/" target="_blank" @click="openOwnLink">moment.js</a> for available format string.</p>
+        <p class="note">
+            <div class="preview">Preview: {{ datePreview }}</div>
+            <span v-show="isDatetimeFormatModified">Reset the value to <a href="#" @click.prevent="resetDatetimeFormat">default format</a>.</span> Refer to <a href="https://momentjs.com/docs/#/displaying/format/" target="_blank" @click="openOwnLink">moment.js</a> for available format string.</p>
 
         <div class="action-button-container flex-container" v-show="block.hasValidID && targetItem">
             <button class='action-button' id="open-url" @click="onOpenURL">Open URL</button>
@@ -36,11 +38,12 @@ import { app, Rectangle } from 'indesign'
 import { reactive, watch, computed, onMounted, ref, nextTick } from 'vue'
 import LabelledField from '../LabelledField/index.vue'
 import { extractBlockId, getIDFromString, openURL } from '../../libs/utils';
-import { getArenaData, getArenaImageFromData, getAssetFolder } from '../../libs/import-arena';
+import { getArenaData, getArenaImageFromData, getAssetFolder, updateItem } from '../../libs/import-arena';
 import { useUserStore } from '../../stores/userStore'
 import { useBlockStore } from '../../stores/blockStore'
 import { storeToRefs } from 'pinia';
 import BlockPropertySelectionDialog from '../BlockPropertySelectionDialog/index.vue'
+import moment from 'moment';
 
 const userStore = useUserStore()
 const blockStore = useBlockStore()
@@ -62,6 +65,10 @@ const block = reactive({
     })
 })
 
+const datePreview = computed( () => {
+    return moment().format(datetimeFormat.value)
+})
+
 const resetDatetimeFormat = (e) => {
     datetimeFormat.value = userStore.defaultDatetimeFormat
 }
@@ -80,12 +87,11 @@ onMounted(async () => {
         console.log(e)
     }
 
-    watch(() =>textImportDialog.value.selectedProperty, (newVal, oldVal) => {
+    watch(() =>textImportDialog.value.selectedProperty, async (newVal, oldVal) => {
         try {
+            let item = targetItem.value
             let p = textImportDialog.value.selectedProperty
-            let v = blockData.value[p]
-            targetItem.value.name = `arena.${p}-${id.value}`
-            targetItem.value.contents = (v || "").toString()
+            await updateItem(item, blockData.value, p, datetimeFormat.value )
         } catch (e) {
             console.log(e)
         }
@@ -104,8 +110,7 @@ const onImportArena = async (e) => {
 
     // If is image, download the image
     if (block.isImageItem) {
-        item.name = `arena-${id.value}`
-        item.place(await getArenaImageFromData(data, block.useCache))
+        await updateItem(item, data, 'image', datetimeFormat.value )
     } else {
         let prevName = item.name
         let prevContents = item.contents

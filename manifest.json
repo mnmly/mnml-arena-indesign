@@ -28,6 +28,58 @@
   "entrypoints": [
     {
       "type": "panel",
+      "id": "blockPanel",
+      "minimumSize": {
+        "width": 230,
+        "height": 200
+      },
+      "maximumSize": {
+        "width": 2000,
+        "height": 2000
+      },
+      "preferredDockedSize": {
+        "width": 300,
+        "height": 300
+      },
+      "preferredFloatingSize": {
+        "width": 300,
+        "height": 300
+      },
+      "label": {
+        "default": "Are.na: Block Update"
+      },
+      "icons": [
+        {
+          "width": 23,
+          "height": 23,
+          "path": "icons/dark.png",
+          "scale": [
+            1,
+            2
+          ],
+          "theme": [
+            "darkest",
+            "dark",
+            "medium"
+          ]
+        },
+        {
+          "width": 23,
+          "height": 23,
+          "path": "icons/light.png",
+          "scale": [
+            1,
+            2
+          ],
+          "theme": [
+            "lightest",
+            "light"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "panel",
       "id": "mainPanel",
       "minimumSize": {
         "width": 230,
@@ -46,111 +98,7 @@
         "height": 300
       },
       "label": {
-        "default": "Are.na for InDesign"
-      },
-      "icons": [
-        {
-          "width": 23,
-          "height": 23,
-          "path": "icons/dark.png",
-          "scale": [
-            1,
-            2
-          ],
-          "theme": [
-            "darkest",
-            "dark",
-            "medium"
-          ]
-        },
-        {
-          "width": 23,
-          "height": 23,
-          "path": "icons/light.png",
-          "scale": [
-            1,
-            2
-          ],
-          "theme": [
-            "lightest",
-            "light"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "panel",
-      "id": "userPanel",
-      "minimumSize": {
-        "width": 230,
-        "height": 200
-      },
-      "maximumSize": {
-        "width": 2000,
-        "height": 2000
-      },
-      "preferredDockedSize": {
-        "width": 300,
-        "height": 300
-      },
-      "preferredFloatingSize": {
-        "width": 300,
-        "height": 300
-      },
-      "label": {
-        "default": "Are.na User"
-      },
-      "icons": [
-        {
-          "width": 23,
-          "height": 23,
-          "path": "icons/dark.png",
-          "scale": [
-            1,
-            2
-          ],
-          "theme": [
-            "darkest",
-            "dark",
-            "medium"
-          ]
-        },
-        {
-          "width": 23,
-          "height": 23,
-          "path": "icons/light.png",
-          "scale": [
-            1,
-            2
-          ],
-          "theme": [
-            "lightest",
-            "light"
-          ]
-        }
-      ]
-    },
-    {
-      "type": "panel",
-      "id": "authorisationPanel",
-      "minimumSize": {
-        "width": 230,
-        "height": 200
-      },
-      "maximumSize": {
-        "width": 2000,
-        "height": 2000
-      },
-      "preferredDockedSize": {
-        "width": 300,
-        "height": 300
-      },
-      "preferredFloatingSize": {
-        "width": 300,
-        "height": 300
-      },
-      "label": {
-        "default": "Authorise Are.na for InDesign"
+        "default": "Are.na"
       },
       "icons": [
         {

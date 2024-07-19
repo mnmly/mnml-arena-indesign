@@ -1,6 +1,7 @@
 import Arena from 'are.na';
 import { defineStore } from "pinia"
 import { ref, watch } from "vue"
+import { useRouter } from 'vue-router';
 
 const defaultDatetimeFormat = 'MMMM Do YYYY, h:mm:ss a'
 
@@ -18,5 +19,10 @@ export const useUserStore = defineStore("user", () => {
       arena.value = null
     }
   })
-  return { accessToken, id, arena, datetimeFormat, defaultDatetimeFormat};
+
+  return { accessToken, id, arena, datetimeFormat, defaultDatetimeFormat };
+
 }, {persist: true});
+
+
+// Vue Button Component

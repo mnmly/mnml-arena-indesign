@@ -4,24 +4,19 @@ import { router } from './router';
 
 entrypoints.setup({
   panels: {
-    mainPanel: {
+    blockPanel: {
       create() {
-        let el = document.getElementById('main-panel')
+        let el = document.getElementById('block-panel')
         this.app = createVue('blockUpdate').mount(el)
       }
     },
-    userPanel: {
+    mainPanel: {
       create() {
-        let el = document.getElementById('user-panel')
-        let app = createVue('user')
+        let el = document.getElementById('main-panel')
+        let app = createVue('main')
         app.use(router)
         app.mount(el)
       },
     },
-    authorisationPanel: {
-      create() {
-        createVue('auth').mount('#authorisation-panel')
-      }
-    }
   }
 });
