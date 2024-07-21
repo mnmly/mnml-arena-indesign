@@ -113,12 +113,16 @@
     background: #333;
   }
 </style>
-<link rel="stylesheet" href="dist/app.css">
+<link rel="stylesheet" href="./app.css">
 </head>
 
 <body>
-  <uxp-panel panelid="blockPanel" id="block-panel"></uxp-panel>
-  <uxp-panel panelid="mainPanel" id="main-panel"></uxp-panel>
-  <script src="dist/app.js"></script>
+  <div id="app">
+    <uxp-panel panelid="mainPanel" id="main-panel">
+    </uxp-panel>
+    <uxp-panel panelid="blockPanel" id="block-panel">
+    </uxp-panel>
+  </div>
+  <script src="./app.js"></script>
 </body>
 </html>

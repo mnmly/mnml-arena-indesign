@@ -1,11 +1,21 @@
 import * as esbuild from 'esbuild'
+import copy from 'esbuild-plugin-copy'
 import vuePlugin from 'esbuild-plugin-vue3'
 
 const commonConfig = {
   entryPoints: ['src/app.js'],
   bundle: true,
   outdir: './dist',
-  plugins: [vuePlugin({
+  plugins: [
+    copy({
+      resolveFrom: 'cwd',
+      assets: {
+        from: ['./plugin/**/*'],
+        to: ['./dist']
+      },
+      watch: true,
+    }),
+    vuePlugin({
     cssInline: false,
     compilerOptions: {
       isCustomElement: tag => ['webview', 'uxp-panel'].indexOf(tag) > -1 

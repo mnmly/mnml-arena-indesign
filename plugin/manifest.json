@@ -18,6 +18,10 @@
           "https://*.cloudfront.net"
         ]
     },
+  
+    "launchProcess": {
+      "schemes": ["https", "http"]
+    },
     "webview": {
       "allow": "yes",
       "domains": "all",
@@ -28,7 +32,7 @@
   "entrypoints": [
     {
       "type": "panel",
-      "id": "blockPanel",
+      "id": "mainPanel",
       "minimumSize": {
         "width": 230,
         "height": 200
@@ -46,7 +50,7 @@
         "height": 300
       },
       "label": {
-        "default": "Are.na: Block Update"
+        "default": "Are.na"
       },
       "icons": [
         {
@@ -80,7 +84,7 @@
     },
     {
       "type": "panel",
-      "id": "mainPanel",
+      "id": "blockPanel",
       "minimumSize": {
         "width": 230,
         "height": 200
@@ -98,7 +102,7 @@
         "height": 300
       },
       "label": {
-        "default": "Are.na"
+        "default": "Are.na: Block Update"
       },
       "icons": [
         {

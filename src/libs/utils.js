@@ -1,6 +1,8 @@
 const os = require('os')
 const fs = require('uxp').storage.localFileSystem
 const { app, ScriptLanguage } = require("indesign")
+const { shell }  = require("uxp");
+
 
 const getIDFromString = (str) => {
     return parseInt(str.split('-').pop(), 10)
@@ -13,12 +15,11 @@ const extractIDFromItem = (linkStr) => {
     return null
 }
 
-const openURL = (url) => {
-    if (os.platform() == 'darwin') {
-        var appleScript = 'tell application "System Events" to open location "' + url + '"';
-        app.doScript(appleScript, ScriptLanguage.APPLESCRIPT_LANGUAGE);
-    } else {
-        alert('Windows support is currently limited.')
+const openURL = async (url) => {
+    try {
+        await shell.openExternal(url, "Opening Are.na block page.")
+    } catch ( e ) {
+        console.error(e)
     }
 }
 
@@ -71,6 +72,17 @@ async function fetchAndSaveFile(url, folder, fileName, useCache) {
     }
 }
 
+const showAlert = (str) => {
+    const dialog = app.dialogs.add();
+    const col = dialog.dialogColumns.add();
+    const colText = col.staticTexts.add();
+    colText.staticLabel = str
+    dialog.canCancel = false;
+    dialog.show();
+    dialog.destroy();
+    return;
+}
+
 module.exports = {
     getIDFromString,
     extractIDFromItem,
@@ -79,4 +91,5 @@ module.exports = {
     fetchAndSaveFile,
     extractBlockId,
     openURL,
+    showAlert
 }

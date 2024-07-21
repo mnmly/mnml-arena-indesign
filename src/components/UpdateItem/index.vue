@@ -37,7 +37,7 @@
 import { app, Rectangle } from 'indesign'
 import { reactive, watch, computed, onMounted, ref, nextTick } from 'vue'
 import LabelledField from '../LabelledField/index.vue'
-import { extractBlockId, getIDFromString, openURL } from '../../libs/utils';
+import { extractBlockId, getIDFromString, openURL, showAlert } from '../../libs/utils';
 import { getArenaData, getAssetFolder, updateItem } from '../../libs/import-arena';
 import { useUserStore } from '../../stores/userStore'
 import { useBlockStore } from '../../stores/blockStore'
@@ -49,6 +49,8 @@ const userStore = useUserStore()
 const blockStore = useBlockStore()
 const {accessToken, datetimeFormat } = storeToRefs(userStore)
 const { id, targetItem } = storeToRefs(blockStore)
+
+window.__app = app
 
 const blockData = ref(null)
 const textImportDialog = ref(null)
@@ -75,17 +77,17 @@ const resetDatetimeFormat = (e) => {
     datetimeFormat.value = userStore.defaultDatetimeFormat
 }
 
-const openOwnLink = (e) => {
-    openURL(e.target.href)
+const openOwnLink = async (e) => {
+    await openURL(e.target.href)
 }
 
 onMounted(async () => {
 
     try {
-        const doc = app.activeDocument;
+        const doc = await app.activeDocument;
         let folder = await getAssetFolder(doc)
     } catch (e) {
-        console.log(e)
+        console.log(e.message)
     }
 
     watch(() =>textImportDialog.value.selectedProperty, async (newVal, oldVal) => {
@@ -99,8 +101,8 @@ onMounted(async () => {
     })
 })
 
-const onOpenURL = (e) => {
-    openURL("https://are.na/block/" + id.value);
+const onOpenURL = async (e) => {
+    await openURL("https://are.na/block/" + id.value);
 }
 
 const onImportArena = async (e) => {
@@ -135,22 +137,6 @@ watch(() => id.value, (newValue) => {
     }
 }, {immediate: true})
 
-// Set up listener for the active document
-function setupActiveDocumentListener() {
-    const activeDocument = app.activeDocument;
-    if (activeDocument) {
-        setupSelectionChangeListener(activeDocument);
-    } else {
-        console.log("No active document");
-    }
-}
-
-function setupSelectionChangeListener(doc) {
-    if (doc) {
-        doc.removeEventListener("afterSelectionChanged", onSelectionChange);
-        doc.addEventListener("afterSelectionChanged", onSelectionChange);
-    }
-}
 function onSelectionChange(event) {
     const selection = event.target.selection;
     let _id
@@ -165,8 +151,29 @@ function onSelectionChange(event) {
     }
 }
 
-onMounted(() => {
-    setupActiveDocumentListener()
+const onAfterOpen = async (e) => {
+    if (e) {
+        console.log(e.currentTarget)
+    }
+    const doc = await app.activeDocument;
+    doc.removeEventListener("afterSelectionChanged", onSelectionChange);
+    doc.addEventListener("afterSelectionChanged", onSelectionChange);
+}
+
+// Set up listener for the active document
+const setupActiveDocumentListener = async () => {
+}
+
+
+onMounted(async () => {
+    console.log('on mounted')
+    try {
+        await onAfterOpen()
+    } catch (e) {
+        // if no active document found...
+        app.addEventListener('afterActivate', onAfterOpen)
+        console.log(e.message)
+    }
 })
 
 </script>
