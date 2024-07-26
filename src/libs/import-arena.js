@@ -2,6 +2,7 @@
 const fs = require('uxp').storage.localFileSystem;
 const { fetchAndSaveFile, loadPreferences } = require("./utils");
 const moment = require('moment')
+const { app } = require('indesign')
 
 let arenaAssetsFolder;
 
@@ -24,8 +25,9 @@ const updateItem = async (item, data, key, datetimeFormat) => {
     }
 }
 
-async function getAssetFolder(doc) {
+async function getAssetFolder() {
 
+    let doc = await app.activeDocument;
     let docPath
     try {
       docPath = await doc.filePath;
@@ -105,12 +107,13 @@ async function getArenaData(id, accessToken, useCache) {
     let fileFound = false
     let jsonFile
     try {
-        jsonFile = await arenaAssetsFolder.getEntry(filename)
+        jsonFile = await getAssetFolder().getEntry(filename)
         fileFound = true
     } catch (e) {
     }
     if (!fileFound || !useCache) {
-        jsonFile = await fetchAndSaveFile(url, arenaAssetsFolder, filename, useCache)
+        let folder = await getAssetFolder()
+        jsonFile = await fetchAndSaveFile(url, folder, filename, useCache)
     }
     let data = JSON.parse(await jsonFile.read())
     return data
@@ -123,7 +126,8 @@ async function getArenaImage(id, accessToken, useCache) {
 
 async function getArenaImageFromData(data, useCache) {
     let url = data.image.original.url
-    var imageFile = await fetchAndSaveFile(url, arenaAssetsFolder, data.id + data.image.filename, useCache)
+    let folder = await getAssetFolder()
+    var imageFile = await fetchAndSaveFile(url, folder, data.id + data.image.filename, useCache)
     return imageFile
 }
 
