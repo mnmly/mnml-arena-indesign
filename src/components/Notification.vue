@@ -18,8 +18,8 @@
   </template>
   
   <script setup>
-  import { notificationStore } from '../../stores/notificationStore'
-  import { useNotification } from '../../composables/useNotification'
+  import { notificationStore } from '../stores/notificationStore'
+  import { useNotification } from '../composables/useNotification'
   
   const { notifications } = notificationStore
   const { closeNotification } = useNotification()

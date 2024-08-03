@@ -1,5 +1,5 @@
 <template>
-    <div v-if>
+    <div v-if="activated">
         + Insert block
     </div>
 </template>
@@ -8,12 +8,12 @@
 
 import { app, Rectangle } from 'indesign'
 import { reactive, watch, computed, onMounted, ref } from 'vue'
-import { extractBlockId, getIDFromString, openURL, showAlert } from '../../libs/utils';
-import { getArenaData, getAssetFolder, updateItem } from '../../libs/import-arena';
-import { useUserStore } from '../../stores/userStore'
-import { useBlockStore } from '../../stores/blockStore'
+import { extractBlockId, getIDFromString, openURL, showAlert } from '../libs/utils';
+import { getArenaData, getAssetFolder, updateItem } from '../libs/import-arena';
+import { useUserStore } from '../stores/userStore'
+import { useBlockStore } from '../stores/blockStore'
 import { storeToRefs } from 'pinia';
-import BlockPropertySelectionDialog from '../BlockPropertySelectionDialog/index.vue'
+import BlockPropertySelectionDialog from '../BlockPropertySelectionDialog.vue'
 import moment from 'moment';
 
 const userStore = useUserStore()
@@ -30,6 +30,10 @@ const isDatetimeFormatModified = computed(() => {
     return datetimeFormat.value != userStore.defaultDatetimeFormat
 })
 
+const activated = compuated( () => {
+    return targetItem.value && id.value
+} )
+
 const block = reactive({
     useCache: true,
     isImageItem: computed(() => {
@@ -39,18 +43,6 @@ const block = reactive({
         return !isNaN(parseInt(id.value, 10))
     })
 })
-
-const datePreview = computed( () => {
-    return moment().format(datetimeFormat.value)
-})
-
-const resetDatetimeFormat = (e) => {
-    datetimeFormat.value = userStore.defaultDatetimeFormat
-}
-
-const openOwnLink = async (e) => {
-    await openURL(e.target.href)
-}
 
 onMounted(async () => {
 

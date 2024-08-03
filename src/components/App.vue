@@ -10,8 +10,8 @@
 
 <script setup>
 
-import Main from './../Main/index.vue'
-import UpdateItem from './../UpdateItem/index.vue'
-import NotificationView from './../Notification/index.vue'
+import Main from './Main.vue'
+import UpdateItem from './UpdateItem.vue'
+import NotificationView from './Notification.vue'
 
 </script>

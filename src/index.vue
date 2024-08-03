@@ -1,5 +1,4 @@
 <script setup>
-// import ShowObjects from "./components/ShowObjects/index.vue"
 </script>
 
 <template>

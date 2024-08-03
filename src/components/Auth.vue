@@ -6,7 +6,7 @@
 
 <script setup>
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { useUserStore } from '../../stores/userStore';
+import { useUserStore } from '../stores/userStore';
 import { storeToRefs } from 'pinia';
 import Arena from 'are.na'
 

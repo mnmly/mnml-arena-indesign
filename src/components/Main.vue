@@ -45,8 +45,8 @@
 import { RouterView, useRouter } from 'vue-router'
 import { onBeforeUnmount, onMounted, onRenderTracked, provide, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useUserStore } from '../../stores/userStore';
-import Notification from '../../components/Notification/index.vue'
+import { useUserStore } from '../stores/userStore';
+import Notification from '../components/Notification.vue'
 
 const root = ref(null)
 

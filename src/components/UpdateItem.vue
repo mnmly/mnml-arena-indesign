@@ -36,13 +36,13 @@
 <script setup>
 import { app, Rectangle } from 'indesign'
 import { reactive, watch, computed, onMounted, ref, nextTick } from 'vue'
-import LabelledField from '../LabelledField/index.vue'
-import { extractBlockId, getIDFromString, openURL, showAlert } from '../../libs/utils';
-import { getArenaData, getAssetFolder, updateItem } from '../../libs/import-arena';
-import { useUserStore } from '../../stores/userStore'
-import { useBlockStore } from '../../stores/blockStore'
+import LabelledField from './LabelledField.vue'
+import { extractBlockId, getIDFromString, openURL, showAlert } from '../libs/utils';
+import { getArenaData, getAssetFolder, updateItem } from '../libs/import-arena';
+import { useUserStore } from '../stores/userStore'
+import { useBlockStore } from '../stores/blockStore'
 import { storeToRefs } from 'pinia';
-import BlockPropertySelectionDialog from '../BlockPropertySelectionDialog/index.vue'
+import BlockPropertySelectionDialog from './BlockPropertySelectionDialog.vue'
 import moment from 'moment';
 
 const userStore = useUserStore()

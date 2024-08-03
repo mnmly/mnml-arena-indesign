@@ -11,8 +11,8 @@
 
 import { nextTick, onBeforeUnmount, onMounted, ref, watch, inject } from 'vue';
 import { storeToRefs } from 'pinia';
-import { useUserStore } from '../../stores/userStore';
-import ChannelCellView from '../ChannelCellView/index.vue'
+import { useUserStore } from '../stores/userStore';
+import ChannelCellView from './ChannelCellView.vue'
 
 const root = ref(null)
 const contents = ref([])

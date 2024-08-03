@@ -106,14 +106,14 @@ import { onMounted, ref, onBeforeUnmount, inject, watch, provide } from 'vue';
 
 import { RouterLink } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { useUserStore } from '../stores/userStore';
+import { useUserStore } from '../stores/userStore'
 import { useBlockStore } from '../stores/blockStore'
-import BlockCellView from './../BlockCellView.vue'
-
-import { updateItem } from '../libs/import-arena';
+import { updateItem } from '../libs/import-arena'
 import { createBoilerplateSpread } from '../libs/master-boilerplate';
 
-import BlockPropertySelectionDialog from '../../components/BlockPropertySelectionDialog.vue'
+import BlockCellView from './BlockCellView.vue'
+import BlockPropertySelectionDialog from './BlockPropertySelectionDialog.vue'
+
 
 const blockStore = useBlockStore()
 const userStore = useUserStore()
