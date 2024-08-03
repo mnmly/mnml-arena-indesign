@@ -4,6 +4,7 @@
   "description": "Default template for creating Adobe UXP based InDesign plugin.",
   "main": "index.js",
   "scripts": {
+    "copy-static": "cp -rf ./plugin/* dist/.",
     "start": "npm run copy-static && DEBUG=* node esbuild.config.mjs",
     "watch": "node esbuild.config.mjs --watch",
     "build": "node esbuild.config.mjs --build"

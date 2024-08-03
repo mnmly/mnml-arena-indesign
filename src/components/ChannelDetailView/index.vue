@@ -18,9 +18,12 @@
             <a class='cta' @click.prevent="importContents">Import Contents</a>
         </div>
         <div class="grid">
-            <BlockCellView ref="contentsRef" v-for="content in contents" :key="content.id" :content="content" @click="onclick(content)" :class="selectedClass(content)"></BlockCellView>
+            <BlockCellView ref="contentsRef" v-for="content in contents" :key="content.id" :content="content"></BlockCellView>
         </div>
     </div>
+
+    <BlockPropertySelectionDialog ref="textImportDialog" v-bind:data="blockData"></BlockPropertySelectionDialog>
+
 </template>
 
 <style scoped>
@@ -99,7 +102,7 @@ nav {
 <script setup>
 
 import { app, LocationOptions } from 'indesign'
-import { onMounted, ref, onBeforeUnmount, inject, watch } from 'vue';
+import { onMounted, ref, onBeforeUnmount, inject, watch, provide } from 'vue';
 
 import { RouterLink } from 'vue-router';
 import { storeToRefs } from 'pinia';
@@ -109,6 +112,8 @@ import BlockCellView from './../BlockCellView/index.vue'
 
 import { updateItem } from '../../libs/import-arena';
 import { createBoilerplateSpread } from '../../libs/master-boilerplate';
+
+import BlockPropertySelectionDialog from '../../components/BlockPropertySelectionDialog/index.vue'
 
 const blockStore = useBlockStore()
 const userStore = useUserStore()
@@ -125,6 +130,14 @@ const props = defineProps({
         type: String,
         required: true
     }
+})
+
+const textImportDialog = ref(null)
+const blockData = ref({})
+
+provide('dialog', textImportDialog)
+provide('updateBlockData', (newProps) => {
+    blockData.value = { ...blockData.value, ...newProps };
 })
 
 const selectedClass = (content) => {
@@ -157,7 +170,7 @@ const loadContents = async (opts) => {
 const onresize = () => {
     // root.value.height = root.value.parentElement.clientHeight + 'px'
     if ( contentsRef.value && contentsRef.value.length > 0 ) {
-        let w = contentsRef.value[0].$el.clientWidth
+        let w = contentsRef.value[0].$el.clientWidth - 10
         contentsRef.value.forEach((d) => {
             d.size = w
         })
