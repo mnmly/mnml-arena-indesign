@@ -2,13 +2,16 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 
 import ChannelListView from './components/ChannelListView.vue'
 import ChannelDetailView from './components/ChannelDetailView.vue'
+import SettingsView from './components/SettingsView.vue'
 import AuthView from './components/Auth.vue'
 import { storeToRefs  } from 'pinia'
 import { useUserStore } from './stores/userStore'
+
 import { watch } from 'vue'
 
 const routes = [
   { path: '/', component: ChannelListView },
+  { path: '/settings', component: SettingsView },
   { path: '/authorise', component: AuthView },
   { path: '/channels/:slug', 
     component: ChannelDetailView,

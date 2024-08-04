@@ -1,7 +1,7 @@
 import { loadPreferences, savePreferences } from "../libs/utils";
 
 export function JSONPersistencePlugin({ store, options }) {
-    if (options.persist) {
+    if (options.persist && options.json) {
       // Restore state when the store is created
       const restoreState = async () => {
         try {
@@ -21,4 +21,23 @@ export function JSONPersistencePlugin({ store, options }) {
         await savePreferences(state)
       });
     }
+}
+
+export const LocalStoragePlugin = ({ store, options } ) => {
+  const key = 'settings'
+
+  if (options.persist && options.localStorage) {
+    const restoreState = () => {
+      let item = localStorage.getItem( key)
+      if ( item ) {
+        store.$patch(JSON.parse(item))
+      }
+    }
+
+    restoreState()
+
+    store.$subscribe( (mutation, state ) => {
+      localStorage.setItem(key, JSON.stringify(state))
+    } )
+  }
 }

@@ -21,7 +21,7 @@
     flex-wrap: nowrap;
     align-content: center;
     border: 1px solid rgb(222, 222, 222);
-    margin: 5px;
+    margin: 5px 0;
     padding: 15px 10px;
     border-radius: 2px;
     text-decoration: none;

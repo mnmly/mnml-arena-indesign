@@ -1,16 +1,6 @@
 <template>
     <div class="content-list">
-        <nav>
-            <div class="flex app-width">
-                <RouterLink to="/" class="back">
-                    <svg version="1.1" id="Flat" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 800 800" style="enable-background:new 0 0 800 800;" xml:space="preserve"> <path d="M217.5,410c0-9.9,3.9-19.5,11-26.5l250-250c14.7-14.6,38.4-14.6,53,0c14.6,14.6,14.6,38.4,0,53L308,410l223.5,223.5 c14.6,14.7,14.6,38.4,0,53c-14.6,14.6-38.4,14.6-53,0l-250-250C221.4,429.5,217.5,420,217.5,410z"/> </svg>
-                </RouterLink>
-                <div v-if="channel" :class="`channel-${channel.status}`">
-                    <h5 class="title">{{ channel.title }}</h5>
-                </div>
-                <p></p>
-            </div>
-        </nav>
+        <NavView v-if="channel" :title="channel.title"></NavView>
         <div v-if="channel" class="meta" :class="`channel-${channel.status}`">
             <h3 class="title">{{ channel.title }}</h3>
             <p class="description">{{ channel.metadata.description }}</p>
@@ -28,27 +18,6 @@
 
 <style scoped>
 
-.back {
-    color: inherit;
-}
-.back svg{
-    width: 20px;
-    height: 20px;
-}
-
-.flex {
-    display: flex;
-    justify-content: space-between;
-}
-
-nav {
-    position: fixed;
-    background-color: var(--colors-gray0);
-    width: 95%;
-    left: 0;
-    top: 0;
-    padding: 10px;
-}
 
 .cta {
     background: rgb(247, 247, 247);
@@ -104,7 +73,6 @@ nav {
 import { app, LocationOptions } from 'indesign'
 import { onMounted, ref, onBeforeUnmount, inject, watch, provide } from 'vue';
 
-import { RouterLink } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { useUserStore } from '../stores/userStore'
 import { useBlockStore } from '../stores/blockStore'
@@ -113,8 +81,10 @@ import { createBoilerplateSpread } from '../libs/master-boilerplate';
 
 import BlockCellView from './BlockCellView.vue'
 import BlockPropertySelectionDialog from './BlockPropertySelectionDialog.vue'
+import NavView from './NavView.vue';
+import { useNotification } from '../composables/useNotification';
 
-
+const { showNotification } = useNotification()
 const blockStore = useBlockStore()
 const userStore = useUserStore()
 
@@ -225,10 +195,13 @@ const importContents = async () => {
         }
     }
 
+
     contents.value.forEach(async ( content )=>{
 
         let masterSpread = spreads[content.class.toLowerCase()]
-        if (!masterSpread) { return console.log(`masterSpread for ${content.class} is not prepared. Make 'A-${content.class.toLowerCase()}' Master Spread`)}
+        if (!masterSpread) { 
+            return showNotification(`masterSpread for "${content.class}" is not prepared. Make 'A-${content.class.toLowerCase()}' Master Spread`)
+        }
 
         let newPage = doc.pages.add(LocationOptions.AT_END)
         newPage.appliedMaster = masterSpread

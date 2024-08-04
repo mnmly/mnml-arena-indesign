@@ -1,5 +1,5 @@
 <template>
-    <div class="block-cell">
+    <div class="block-cell" @click.prevent="openURL('https://www.are.na/block/' + content.id)">
         <div class="cell-square" :style="{'height': size + 'px'}">
             <div class='block-image' v-if="content.class == 'Image'" :style="{'background-image': `url(${content.image.square.url})`}"></div>
             <div class='block-link' v-if="content.class == 'Link'" :style="{'background-image': `url(${content.image.square.url})`}"></div>
@@ -9,9 +9,9 @@
             </div>
 
             <div class="cta">
-                <a @click.prevent="openOwnLink"
+                <a @click.prevent.stop="openOwnLink"
                     :href="sourceURL">Source</a>
-                <a v-show="targetItem" @click.prevent="onImportArena">Insert</a>
+                <a v-show="targetItem" @click.prevent.stop="onImportArena">Insert</a>
             </div>
         </div>
         <p class="title">{{content.title}}</p>
@@ -42,7 +42,7 @@
     display: block;
     margin: 5px;
     padding: 10px;
-    background-color: rgba(255, 255, 255, 0.95);
+    background-color: var(--colors-backgroundHeavy);
     color: inherit;
     text-decoration: none;
     border-radius: 3px;

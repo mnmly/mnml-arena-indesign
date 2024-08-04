@@ -1,17 +1,13 @@
 import { router } from './router'
 import { createVue } from './composables/useVue'
 import { entrypoints } from 'uxp'
+import { getIDFromString, openURL } from './libs/utils';
+import { useBlockStore } from './stores/blockStore';
+import { storeToRefs } from 'pinia';
 
 let called = false
 entrypoints.setup({
   panels: {
-    blockPanel: {
-      create() {
-        let el = document.getElementById('block-panel')
-        const app = createVue('blockUpdate')
-        app.mount(el)
-      }
-    },
     mainPanel: {
       create() {
           if ( called ) return
@@ -24,9 +20,20 @@ entrypoints.setup({
           } catch (e) {
             showAlert(e)
           }
-      },
+      }
     },
-  }
+  },
+  commands: {
+    openBlockInArena: async () => {
+      const {targetItem} = storeToRefs( useBlockStore() )
+      if ( targetItem.value ) {
+        let id = getIDFromString(targetItem.value.name)
+        if ( !isNaN(id) ) {
+          await openURL('https://www.are.na/block/' + id)
+        }
+      }
+    }
+  },
 });
 
 

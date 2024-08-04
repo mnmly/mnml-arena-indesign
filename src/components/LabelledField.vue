@@ -8,27 +8,6 @@
 
 <style>
 
-.field-container input[type='text'] {
-    background: none;
-    border: none;
-    appearance: none;
-    background: #333;
-    border-radius: 3px;
-    padding-bottom: 3px;
-    flex: 1;
-    min-width: 50px;
-
-}
-
-.field-container {
-    margin-top: 0.5em;
- }
-
-  
-.field-container label{
-    min-width: 110px;
-}
-
 </style>
 
 <script setup>

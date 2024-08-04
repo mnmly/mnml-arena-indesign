@@ -6,10 +6,11 @@ import auth from '../components/Auth.vue'
 import app from '../components/App.vue'
 import blockUpdate from '../components/UpdateItem.vue'
 import { createPinia } from 'pinia'
-import { JSONPersistencePlugin } from './../stores/plugin'
+import { JSONPersistencePlugin, LocalStoragePlugin } from './../stores/plugin'
 
 const pinia = createPinia()
 pinia.use(JSONPersistencePlugin)
+pinia.use(LocalStoragePlugin)
 
 export const createVue = (entrypoint) => {
   
