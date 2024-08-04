@@ -1,25 +1,25 @@
 import { router } from './router'
-import { createVue } from './composables/useVue'
 import { entrypoints } from 'uxp'
 import { getIDFromString, openURL } from './libs/utils';
 import { useBlockStore } from './stores/blockStore';
-import { storeToRefs } from 'pinia';
+import { createPinia, storeToRefs } from 'pinia';
+import { createApp } from 'vue';
+import Main from './components/Main.vue';
+import { JSONPersistencePlugin, LocalStoragePlugin } from './stores/plugin';
 
-let called = false
+const pinia = createPinia()
+pinia.use(JSONPersistencePlugin)
+pinia.use(LocalStoragePlugin)
+
 entrypoints.setup({
   panels: {
     mainPanel: {
       create() {
-          if ( called ) return
-          try {
           let el = document.getElementById('main-panel')
-          let app = createVue('main')
+          const app = createApp(Main)
+          app.use(pinia)
           app.use(router)
           app.mount(el)
-          called = true
-          } catch (e) {
-            showAlert(e)
-          }
       }
     },
   },
@@ -30,7 +30,11 @@ entrypoints.setup({
         let id = getIDFromString(targetItem.value.name)
         if ( !isNaN(id) ) {
           await openURL('https://www.are.na/block/' + id)
+        } else {
+          alert('Selected item is not linked to are.na block.')
         }
+      } else {
+        alert('No item is selected.')
       }
     }
   },

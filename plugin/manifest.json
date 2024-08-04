@@ -28,6 +28,9 @@
       "enableMessageBridge": "localAndRemote"
     }
 	},
+  "featureFlags": {
+     "enableAlerts": true
+ },
   "manifestVersion": 5,
   "entrypoints": [
     {
