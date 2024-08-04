@@ -71,4 +71,8 @@ const isDatetimeFormatModified = computed(() => {
     left: -6px;
     top: -4px;
 }
+
+.field-container .note {
+    color: var(--colors-slate);
+}
 </style>

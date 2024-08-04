@@ -7,8 +7,6 @@ import AuthView from './components/Auth.vue'
 import { storeToRefs  } from 'pinia'
 import { useUserStore } from './stores/userStore'
 
-import { watch } from 'vue'
-
 const routes = [
   { path: '/', component: ChannelListView },
   { path: '/settings', component: SettingsView },

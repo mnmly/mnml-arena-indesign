@@ -47,8 +47,16 @@ const loadContents = async (opts) => {
             fullyLoaded = true
         }
     } else {
-        contents.value = []
-        fullyLoaded = false
+        refresh()
+    }
+}
+
+const refresh = async (requireLoading = false) => {
+    page = 1
+    contents.value = []
+    fullyLoaded = false
+    if ( requireLoading ) {
+        await initLoad()
     }
 }
 
@@ -63,13 +71,13 @@ const onscroll = (e) => {
         isBottom.value = (el.scrollTop + 10) > threshold
     }
 }
+const initLoad = async () => {
+    page = 1
+    fullyLoaded = false
+    await loadContents({page})
+}
 
 onMounted(async () => {
-    const initLoad = async () => {
-        page = 1
-        fullyLoaded = false
-        await loadContents({page})
-    }
     if ( arena.value ) {
         await initLoad()
     } else {
@@ -83,4 +91,6 @@ onMounted(async () => {
 onBeforeUnmount(() =>{
     window.removeEventListener('resize', onresize)
 })
+
+defineExpose({ refresh })
 </script>

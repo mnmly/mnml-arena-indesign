@@ -1,20 +1,20 @@
 {
-  "name": "com.adobe.uxp.quick.starter.id",
+  "name": "com.mnmly.arena",
   "version": "1.0.0",
-  "description": "Default template for creating Adobe UXP based InDesign plugin.",
+  "description": "Are.na for InDesign",
   "main": "index.js",
   "scripts": {
     "copy-static": "cp -rf ./plugin/* dist/.",
     "start": "npm run copy-static && DEBUG=* node esbuild.config.mjs",
     "watch": "node esbuild.config.mjs --watch",
-    "build": "node esbuild.config.mjs --build"
+    "build": "npm run copy-static && node esbuild.config.mjs --build"
   },
   "repository": {
     "type": "git",
     "url": "git@git.corp.adobe.com:torq/uxp-developer-tools.git",
     "directory": "packages/uxp-templates-pack"
   },
-  "author": "Adobe Inc",
+  "author": "Hiroaki Yamane",
   "license": "Apache-2.0",
   "files": [
     "template.json",

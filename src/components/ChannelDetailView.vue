@@ -5,68 +5,21 @@
             <h3 class="title">{{ channel.title }}</h3>
             <p class="description">{{ channel.metadata.description }}</p>
             <p>by <b>{{ channel.user.full_name }}</b></p>
-            <a class='cta' @click.prevent="importContents">Import Contents</a>
+            <a class='cta' @click.prevent="importContents">Insert all blocks</a>
         </div>
         <div class="grid">
             <BlockCellView ref="contentsRef" v-for="content in contents" :key="content.id" :content="content"></BlockCellView>
         </div>
     </div>
 
-    <BlockPropertySelectionDialog ref="textImportDialog" v-bind:data="blockData"></BlockPropertySelectionDialog>
+    <PropertySelectionDialog
+        ref="dialog"
+        v-bind:title="''"
+        v-bind:data="blockData"></PropertySelectionDialog>
+    <button @click="showDialog">Open Dialog</button>
+    <div id="selection-container"></div>
 
 </template>
-
-<style scoped>
-
-
-.cta {
-    background: rgb(247, 247, 247);
-    border: 1px solid rgb(222, 222, 222);
-    padding: 0px 10px;;
-    display: block;
-    color: rgb(51, 51, 51);
-    text-decoration: none;
-    border-radius: 3px;
-    height: 20px;
-    justify-content: center;
-    align-content: center;
-    width: 120px;
-    /* margin: 0 auto; */
-    margin-top: 20px;
-    margin: 20px auto;
-}
-
-.meta {
-    margin-top: 3em;
-    text-align: center;
-}
-
-.grid {
-    margin-top: 1.5em;
-}
-
-.title {
-    margin: 0;
-    font-weight: normal;
-    margin-bottom: 0.5em;
-}
-
-.description {
-    margin-bottom: 0.5em;
-}
-
-.channel-closed {
-    color: var(--colors-channelClosed3);
-}
-
-.channel-public {
-    color: var(--colors-channelPublic3);
-}
-
-.channel-private {
-    color: var(--colors-channelPrivate3)
-}
-</style>
 
 <script setup>
 
@@ -80,9 +33,9 @@ import { updateItem } from '../libs/import-arena'
 import { createBoilerplateSpread } from '../libs/master-boilerplate';
 
 import BlockCellView from './BlockCellView.vue'
-import BlockPropertySelectionDialog from './BlockPropertySelectionDialog.vue'
 import NavView from './NavView.vue';
 import { useNotification } from '../composables/useNotification';
+import PropertySelectionDialog from './PropertySelectionDialog.vue';
 
 const { showNotification } = useNotification()
 const blockStore = useBlockStore()
@@ -104,11 +57,16 @@ const props = defineProps({
 
 const textImportDialog = ref(null)
 const blockData = ref({})
+const dialog = ref(null)
 
-provide('dialog', textImportDialog)
+provide('propertySelectionDialog', dialog)
 provide('updateBlockData', (newProps) => {
     blockData.value = { ...blockData.value, ...newProps };
 })
+
+const showDialog = () => {
+    dialog.value.showDialog()
+}
 
 const selectedClass = (content) => {
     return {
@@ -241,3 +199,58 @@ onBeforeUnmount(() =>{
 })
 
 </script>
+
+<style scoped>
+
+
+.cta {
+    background: rgb(247, 247, 247);
+    border: 1px solid rgb(222, 222, 222);
+    padding: 0px 10px;;
+    display: block;
+    color: rgb(51, 51, 51);
+    text-decoration: none;
+    border-radius: 3px;
+    height: 28px;
+    justify-content: center;
+    align-content: center;
+    width: 130px;
+    /* margin: 0 auto; */
+    margin-top: 20px;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.meta {
+    margin-top: 3em;
+    text-align: center;
+}
+
+.grid {
+    margin-top: 1.5em;
+}
+
+.title {
+    margin: 0;
+    font-weight: normal;
+    margin-bottom: 0.5em;
+}
+
+.description {
+    margin-bottom: 0.5em;
+}
+
+.channel-closed {
+    color: var(--colors-channelClosed3);
+}
+
+.channel-public {
+    color: var(--colors-channelPublic3);
+}
+
+.channel-private {
+    color: var(--colors-channelPrivate3)
+}
+</style>

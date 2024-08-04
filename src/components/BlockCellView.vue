@@ -84,25 +84,28 @@
 <script setup>
 
 import { Rectangle } from 'indesign'
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '../stores/userStore'
 import { useBlockStore } from '../stores/blockStore'
 import { getArenaData, updateItem } from '../libs/import-arena';
 import { openURL } from '../libs/utils'
+import { useSettingsStore } from '../stores/settingsStore'
 
 const userStore = useUserStore()
 const blockStore = useBlockStore()
+const settingsStore = useSettingsStore()
 
 const { accessToken, datetimeFormat } = storeToRefs(userStore)
 const { targetItem } = storeToRefs(blockStore)
+const { useCache } = storeToRefs(settingsStore)
 
 const size = ref(0)
 const props = defineProps({
     content: Object
 })
 
-const dialog = inject('dialog')
+const dialog = inject('propertySelectionDialog')
 const updateBlockData = inject('updateBlockData')
 
 const sourceURL = computed(() => {
@@ -116,6 +119,7 @@ let data
 
 const watchPropertyChange = () => {
     return watch(() => dialog.value.selectedProperty, async (newVal, oldVal) => {
+    
         try {
             let item = targetItem.value
             let p = newVal
@@ -126,11 +130,24 @@ const watchPropertyChange = () => {
     })
 }
 
+const handleChange = async (d, p) => {
+    try {
+        let item = targetItem.value
+        await updateItem(item, d, p, datetimeFormat.value )
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+onMounted(() => {
+    dialog.value.onHandleChange = handleChange
+})
+
 const onImportArena = async (e) => {
 
     let item = targetItem.value
     let id = props.content.id
-    data = await getArenaData(id, accessToken.value, true)
+    data = await getArenaData(id, accessToken.value, useCache.value)
 
     // If is image, download the image
     if (item instanceof Rectangle) {
@@ -142,7 +159,7 @@ const onImportArena = async (e) => {
         try {
             updateBlockData(data)
             unwatch = watchPropertyChange()
-            let result = await dialog.value.showModal()
+            let result = await dialog.value.showDialog()
             if (result == 'cancel') {
                 item.name = prevName
                 item.contents = prevContents

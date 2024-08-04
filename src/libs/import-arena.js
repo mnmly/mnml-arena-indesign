@@ -20,7 +20,11 @@ const updateItem = async (item, data, key, datetimeFormat) => {
         if (datetimeKeys.indexOf(key) > -1) {
             item.contents = moment(data[key]).format(datetimeFormat || 'MMMM Do YYYY, h:mm:ss a')
         } else {
-            item.contents = data[key];
+            try {
+                item.contents = data[key];
+            } catch (e) {
+                console.log(e)
+            }
         }
     }
 }
