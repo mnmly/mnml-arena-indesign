@@ -90,6 +90,7 @@ const loadContents = async (opts) => {
         if (contents.value.length == result.length) {
             fullyLoaded = true
         }
+        console.log(contents.value)
     } else {
         contents.value = []
         fullyLoaded = false
@@ -128,18 +129,15 @@ const importContents = async () => {
     }
 
     let doc = await app.activeDocument;
-    let types = ['image', 'text', 'attachment']
+    let types = ['image', 'text', 'attachment', 'link']
     let spreads = {}
-
     types.forEach( (t) => {
         let spread = doc.masterSpreads.itemByName(`A-${t}`);
         if (spread.isValid) {
             spreads[t] = spread
-        } else if (t == 'image'){
-            createBoilerplateSpread(doc, t)
-            // alert('Master Spread: `A-image` is automatically created')
         } else {
-            // alert('Master Spread: `A-' + t + '` is not available.\nRefer to `A-image` master spread.')
+            spreads[t] = createBoilerplateSpread(doc, t)
+            showNotification(`masterSpread for "${t}" is automatically generated.`)
         }
     })
 
@@ -160,7 +158,6 @@ const importContents = async () => {
         if (!masterSpread) { 
             return showNotification(`masterSpread for "${content.class}" is not prepared. Make 'A-${content.class.toLowerCase()}' Master Spread`)
         }
-
         let newPage = doc.pages.add(LocationOptions.AT_END)
         newPage.appliedMaster = masterSpread
 
