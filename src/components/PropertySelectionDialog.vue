@@ -3,7 +3,7 @@
         ref="dialog"
         :title="title">
         <div class="field-container">
-            <label for="property-select">Property</label>
+            <label for="property-select" contenteditable="true">Property</label>
             <SelectBox v-model="selectedProperty"
             :options="properties"
             placeholder="Choose a property"/>
@@ -16,6 +16,7 @@
 import { computed, ref } from 'vue';
 import ModalDialog from './ModalDialog.vue';
 import SelectBox from './SelectBox.vue'
+import { accessProperty, listProperties } from '../libs/utils';
 
 const dialog = ref(null)
 const selectedProperty = ref('')
@@ -31,13 +32,12 @@ const props = defineProps({
 const onHandleChange = ref(async (p) => {console.log(p)})
 
 const properties = computed(() => {
-    return Object.keys(props.data).sort().filter(d => d !== 'image').map((d) => {
-        return { label: d, value: d }
-    })
-})
-
-const propertyValue = computed(() => {
-    return props.data[selectedProperty.value]
+    return listProperties(props.data).sort()
+        .filter( d => !/^image/.test(d) )
+        .filter( d => accessProperty(props.data, d) )
+        .map(( d ) => {
+            return { label: d, value: d }
+        })
 })
 
 const showDialog = async () => {

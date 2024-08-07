@@ -76,6 +76,21 @@ const accessProperty = (obj, path) => {
     return path.split('.').reduce((acc, part) => acc && acc[part], obj);
 }
 
+const listProperties = (obj, prefix = '') => {
+    let properties = [];
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const newPrefix = prefix ? `${prefix}.${key}` : key;
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
+          properties = properties.concat(listProperties(obj[key], newPrefix));
+        } else {
+          properties.push(newPrefix);
+        }
+      }
+    }
+    return properties;
+  }
+
 
 const showAlert = (str) => {
     const dialog = app.dialogs.add();
@@ -97,5 +112,6 @@ module.exports = {
     extractBlockId,
     openURL,
     showAlert,
-    accessProperty
+    accessProperty,
+    listProperties
 }
