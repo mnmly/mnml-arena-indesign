@@ -16,7 +16,7 @@
         ref="dialog"
         v-bind:title="''"
         v-bind:data="blockData"></PropertySelectionDialog>
-    <button @click="showDialog">Open Dialog</button>
+
     <div id="selection-container"></div>
 
 </template>

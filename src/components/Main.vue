@@ -24,7 +24,7 @@
 
 <script setup>
 import gsap from 'gsap';
-import { app } from 'indesign'
+import { app, Event } from 'indesign'
 import { RouterView, useRouter } from 'vue-router'
 import { onBeforeUnmount, onMounted, provide, ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
@@ -35,6 +35,7 @@ import { useBlockStore } from '../stores/blockStore';
 import { useRoute } from 'vue-router';
 
 import Notification from '../components/Notification.vue'
+
 
 const root = ref(null)
 const router = useRouter()
@@ -69,19 +70,22 @@ watch(accessToken, () => {
 })
 
 
-
+let lastDocument = null
 const onAfterOpen = async (e) => {
 
-    try {
-        const doc = await app.activeDocument;
-        let folder = await getAssetFolder(doc)
-    } catch (e) {
-        showNotification(e, 'alert')
+    const doc = await app.activeDocument;
+
+    if ( lastDocument != doc ) {
+        try {
+            let folder = await getAssetFolder(doc)
+        } catch (e) {
+            showNotification(e, 'alert')
+        }
+        lastDocument = doc
     }
     
-    const doc = await app.activeDocument;
-    doc.removeEventListener("afterSelectionChanged", onSelectionChange);
-    doc.addEventListener("afterSelectionChanged", onSelectionChange);
+    doc.removeEventListener(Event.AFTER_SELECTION_CHANGED, onSelectionChange);
+    doc.addEventListener(Event.AFTER_SELECTION_CHANGED, onSelectionChange);
 }
 
 const onSelectionChange = (e) => {
@@ -93,15 +97,24 @@ const onSelectionChange = (e) => {
     }
 }
 
+const eventNames = Object.getOwnPropertyNames( Event ).filter((d) => d[0] == d[0].toUpperCase())
+
 onMounted(async () => {
+    eventNames.forEach((key) => {
+        let name = Event[key]
+        let fn = (e) => {
+            console.log(name)
+            console.log(e)
+        }
+        app.addEventListener(name, fn)
+    })
     try {
         await onAfterOpen()
     } catch (e) {
         // if no active document found...
-        app.addEventListener('afterActivate', onAfterOpen)
         showNotification(e.message, 'alert')
     }
-
+    app.addEventListener(Event.AFTER_ACTIVATE, onAfterOpen)
     window.addEventListener('resize', onresize)
     onresize()
 })

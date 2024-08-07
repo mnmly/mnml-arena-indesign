@@ -44,7 +44,7 @@ async function getAssetFolder() {
     let documentFolder
 
     const assetFolderName = 'arena-assets'
-
+    const FOLDER_NOT_FOUND_MESSAGE = 'Asset Folder not found'
     try {
         documentFolder = await fs.getEntryWithUrl(documentFolderURL)
 
@@ -53,11 +53,25 @@ async function getAssetFolder() {
             return assetFolderName == d.name
         })
         if ( !arenaAssetsFolder ) {
-            throw new Error('Asset folder not found')
+            throw new Error(FOLDER_NOT_FOUND_MESSAGE)
         }
     } catch (error) {
-        if (/Asset Folder/.test(error.message)) {
-            arenaAssetsFolder = await documentFolder.createEntry(assetFolderName)
+        if (error.message == FOLDER_NOT_FOUND_MESSAGE) {
+            const _folder = await fs.getFolder({ 
+                initialLocation: documentFolderURL,
+                buttonLabel: 'Set as are.na assets location'
+            })
+            if ( !_folder ) {
+                throw new Error('Select a location for saving are.na assets')
+            }
+            try {
+                arenaAssetsFolder = await _folder.createFolder(assetFolderName)
+            } catch (e) {
+                let entries = await _folder.getEntries()
+                arenaAssetsFolder = entries.find((d) => {
+                    return assetFolderName == d.name
+                })
+            }
         } else {
             console.log(e)
             throw e
