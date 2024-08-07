@@ -59,7 +59,7 @@ async function fetchAndSaveFile(url, folder, fileName, useCache) {
             } )
             if ( found ) { return found }
         }
-        const response = await fetch( url )
+    const response = await fetch( url )
         if ( !response.ok ) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -71,6 +71,11 @@ async function fetchAndSaveFile(url, folder, fileName, useCache) {
         console.error("There was a problem fetching or saving the file:", error);
     }
 }
+
+const accessProperty = (obj, path) => {
+    return path.split('.').reduce((acc, part) => acc && acc[part], obj);
+}
+
 
 const showAlert = (str) => {
     const dialog = app.dialogs.add();
@@ -91,5 +96,6 @@ module.exports = {
     fetchAndSaveFile,
     extractBlockId,
     openURL,
-    showAlert
+    showAlert,
+    accessProperty
 }

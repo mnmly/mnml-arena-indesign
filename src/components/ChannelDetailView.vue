@@ -36,6 +36,7 @@ import BlockCellView from './BlockCellView.vue'
 import NavView from './NavView.vue';
 import { useNotification } from '../composables/useNotification';
 import PropertySelectionDialog from './PropertySelectionDialog.vue';
+import { accessProperty } from '../libs/utils';
 
 const { showNotification } = useNotification()
 const blockStore = useBlockStore()
@@ -160,8 +161,9 @@ const importContents = async () => {
         }
         let newPage = doc.pages.add(LocationOptions.AT_END)
         newPage.appliedMaster = masterSpread
-
-        Object.keys(content).forEach(async (key) => {
+        newPage.masterPageItems.forEach(async (d) => {
+            let key = d.name
+            if (!accessProperty(content, key)) return
             var item = overrideItem(newPage, key);
             if (item && item.isValid) {
                 await updateItem(item, content, key)

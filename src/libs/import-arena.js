@@ -1,6 +1,6 @@
 
 const fs = require('uxp').storage.localFileSystem;
-const { fetchAndSaveFile, loadPreferences } = require("./utils");
+const { fetchAndSaveFile, loadPreferences, accessProperty } = require("./utils");
 const moment = require('moment')
 const { app } = require('indesign')
 
@@ -21,7 +21,7 @@ const updateItem = async (item, data, key, datetimeFormat) => {
             item.contents = moment(data[key]).format(datetimeFormat || 'MMMM Do YYYY, h:mm:ss a')
         } else {
             try {
-                item.contents = data[key];
+                item.contents = accessProperty(data, key)
             } catch (e) {
                 console.log(e)
             }
